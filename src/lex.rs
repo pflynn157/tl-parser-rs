@@ -13,15 +13,22 @@ pub enum Token {
     Func,
     Is,
     End,
+    Var,
+    
+    // Type keywords
+    I32,
     
     // Symbols
     LParen,
     RParen,
     SemiColon,
+    Colon,
+    Assign,
     
     // Literals
     Id(String),
     StringL(String),
+    IntL(u64),
 }
 
 //
@@ -76,18 +83,15 @@ impl Scanner {
                 return Token::Eof;
             }
             
-            let mut c : char = self.contents.chars().nth(self.pos).unwrap();
-            self.pos += 1;
+            let mut c = self.get_char();
             
             // Check string literals
             if c == '\"' {
                 let mut val = String::new();
-                c = self.contents.chars().nth(self.pos).unwrap();
-                self.pos += 1;
+                c = self.get_char();
                 while c != '\"' {
                     val.push(c);
-                    c = self.contents.chars().nth(self.pos).unwrap();
-                    self.pos += 1;
+                    c = self.get_char();
                 }
                 return Token::StringL(val);
             }
@@ -115,6 +119,14 @@ impl Scanner {
                     return token;
                 }
                 
+                // See if we have an integer
+                if self.is_integer() {
+                    token = Token::IntL(self.get_integer());
+                    self.buffer = String::new();
+                    return token;
+                }
+                
+                // Otherwise, we have an indentifier
                 token = Token::Id(self.buffer.clone());
                 self.buffer = String::new();
                 return token;
@@ -122,6 +134,13 @@ impl Scanner {
                 self.buffer.push(c);
             }
         }
+    }
+    
+    // A helper function for getting the next character in the stream
+    fn get_char(&mut self) -> char {
+        let c : char = self.contents.chars().nth(self.pos).unwrap();
+        self.pos += 1;
+        c
     }
     
     // A helper function for indicating whether we have whitespace
@@ -137,17 +156,36 @@ impl Scanner {
         match c {
               '('
             | ')'
-            | ';' => return true,
+            | ';'
+            | ':' => return true,
+            _ => return false,
+        }
+    }
+    
+    // A helper function for seeing if buffer is an integer
+    fn is_integer(&self) -> bool {
+        let num : Result<u64, _> = self.buffer.trim().parse();
+        match num {
+            Ok(_) => return true,
             _ => return false,
         }
     }
     
     // A helper function for return a token based on a symbol
-    fn get_symbol(&self, c : char) -> Token {
+    fn get_symbol(&mut self, c : char) -> Token {
         match c {
             '(' => return Token::LParen,
             ')' => return Token::RParen,
             ';' => return Token::SemiColon,
+            
+            ':' => {
+                let c2 = self.get_char();
+                if c2 == '=' {
+                    return Token::Assign;
+                }
+                self.pos -= 1;
+                return Token::Colon;
+            },
             
             _ => return Token::None,
         }
@@ -158,7 +196,18 @@ impl Scanner {
         if self.buffer == "func" { return Token::Func; }
         else if self.buffer == "is" { return Token::Is; }
         else if self.buffer == "end" { return Token::End; }
+        else if self.buffer == "var" { return Token::Var; }
+        else if self.buffer == "i32" { return Token::I32; }
         Token::None
+    }
+    
+    // A helper function for converting a buffer into an integer
+    fn get_integer(&self) -> u64 {
+        let num : Result<u64, _> = self.buffer.trim().parse();
+        match num {
+            Ok(num) => return num,
+            _ => return 0,
+        }
     }
 }
 

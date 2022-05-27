@@ -1,7 +1,3 @@
-func sayHello is
-    println("Hello!");
-end
-
 func main is
-    sayHello();
+    var x : i32 := 1;
 end
