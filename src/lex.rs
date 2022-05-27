@@ -30,6 +30,8 @@ pub enum Token {
     SemiColon,
     Colon,
     Assign,
+    Add, Sub, Mul, Div, Mod,
+    And, Or, Xor,
     
     // Literals
     Id(String),
@@ -172,7 +174,9 @@ impl Scanner {
               '('
             | ')'
             | ';'
-            | ':' => return true,
+            | ':'
+            | '+' | '-' | '*' | '/' | '%' 
+            | '&' | '|' | '^' => return true,
             _ => return false,
         }
     }
@@ -192,6 +196,14 @@ impl Scanner {
             '(' => return Token::LParen,
             ')' => return Token::RParen,
             ';' => return Token::SemiColon,
+            '+' => return Token::Add,
+            '-' => return Token::Sub,
+            '*' => return Token::Mul,
+            '/' => return Token::Div,
+            '%' => return Token::Mod,
+            '&' => return Token::And,
+            '|' => return Token::Or,
+            '^' => return Token::Xor,
             
             ':' => {
                 let c2 = self.get_char();

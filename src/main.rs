@@ -14,7 +14,7 @@ fn main() {
     let args : Vec<String> = env::args().collect();
     let mut index = 0;
     for arg in args {
-        if arg == "--ast-debug" {
+        if arg == "--ast" {
             ast_debug = true;
         } else {
             if index > 0 {
@@ -47,11 +47,11 @@ fn main() {
     
     if ast_debug {
         parser.debug();
+    } else {
+        // Currently, we use an unwriter to print
+        let file : AstFile = parser.get_file();
+        unwriter::unwrite(file);
     }
-    
-    // Currently, we use an unwriter to print
-    let file : AstFile = parser.get_file();
-    unwriter::unwrite(file);
 }
 
 

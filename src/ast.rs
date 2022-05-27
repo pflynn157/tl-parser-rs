@@ -19,6 +19,12 @@ pub enum AstType {
     
     // Expressions- operators
     Assign,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Mod,
+    And, Or, Xor,
     
     // Expressions- literals
     Id,
@@ -110,9 +116,9 @@ impl AstStatement {
         }
         print!("{:?} {:?} {} ", self.ast_type, self.data_type, self.name);
         
-        if self.expr.ast_type != AstType::None {
+        //if self.expr.ast_type != AstType::None {
             self.expr.print();
-        }
+        //}
         
         println!("");
     }
@@ -153,9 +159,75 @@ impl AstExpression {
             // Binary operators
             //
             AstType::Assign => {
+                print!("(");
                 self.args[0].print();
                 print!(" := ");
                 self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Add => {
+                print!("(");
+                self.args[0].print();
+                print!(" + ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Sub => {
+                print!("(");
+                self.args[0].print();
+                print!(" - ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Mul => {
+                print!("(");
+                self.args[0].print();
+                print!(" * ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Div => {
+                print!("(");
+                self.args[0].print();
+                print!(" / ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Mod => {
+                print!("(");
+                self.args[0].print();
+                print!(" % ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::And => {
+                print!("(");
+                self.args[0].print();
+                print!(" & ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Or => {
+                print!("(");
+                self.args[0].print();
+                print!(" | ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Xor => {
+                print!("(");
+                self.args[0].print();
+                print!(" ^ ");
+                self.args[1].print();
+                print!(")");
             },
             
             //
@@ -179,6 +251,18 @@ impl AstExpression {
             
             _ => { print!("??"); },
         }
+    }
+    
+    pub fn set_lval(&mut self, item : AstExpression) {
+        if self.args.len() > 0 {
+            self.args.insert(0, item);
+        } else {
+            self.args.push(item);
+        }
+    }
+    
+    pub fn set_rval(&mut self, item : AstExpression) {
+        self.args.push(item);
     }
     
     /*pub fn add_list_item(&mut self, item : AstExpression) {

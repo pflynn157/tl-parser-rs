@@ -156,7 +156,7 @@ impl Parser {
         lval.string_value = name;
         
         let mut expr = self.build_expression(Token::SemiColon);
-        expr.args.insert(0, lval);
+        expr.set_lval(lval);
         stmt.set_expression(expr);
         
         stmt
@@ -181,6 +181,12 @@ impl Parser {
                 //
                 // Literals
                 //
+                Token::Id(val) => {
+                    let mut expr = ast_new_expression(AstType::Id);
+                    expr.string_value = val;
+                    stack.push(expr);
+                },
+                
                 Token::IntL(val) => {
                     let mut expr = ast_new_expression(AstType::IntLiteral);
                     expr.int_value = val;
@@ -205,9 +211,15 @@ impl Parser {
                 //
                 // Operators
                 //
-                Token::Assign => {
-                    op_stack.push(ast_new_expression(AstType::Assign));
-                },
+                Token::Assign => op_stack.push(ast_new_expression(AstType::Assign)),
+                Token::Add => op_stack.push(ast_new_expression(AstType::Add)),
+                Token::Sub => op_stack.push(ast_new_expression(AstType::Sub)),
+                Token::Mul => op_stack.push(ast_new_expression(AstType::Mul)),
+                Token::Div => op_stack.push(ast_new_expression(AstType::Div)),
+                Token::Mod => op_stack.push(ast_new_expression(AstType::Mod)),
+                Token::And => op_stack.push(ast_new_expression(AstType::And)),
+                Token::Or => op_stack.push(ast_new_expression(AstType::Or)),
+                Token::Xor => op_stack.push(ast_new_expression(AstType::Xor)),
                 
                 _ => {
                     println!("Error: Invalid token in expression.");
@@ -219,14 +231,23 @@ impl Parser {
         }
         
         // Processing
+        //println!("LEN: {} | STACK: {}", op_stack.len(), stack.len());
         while op_stack.len() > 0 {
             let mut op = op_stack.pop().unwrap();
+            //println!("TYPE: {:?} | LEN: {} | STACK: {}", op.ast_type, op_stack.len(), stack.len());
             if op.ast_type == AstType::Assign {
                 let rval = stack.pop().unwrap();
-                op.args.push(rval);
+                //rval.print(); println!("");
+                op.set_rval(rval);
+                //op.print(); println!("");
                 stack.push(op);
             } else {
-                // TODO
+                let rval = stack.pop().unwrap();
+                let lval = stack.pop().unwrap();
+                op.set_lval(lval);
+                op.set_rval(rval);
+                //op.print(); println!("");
+                stack.push(op);
             }
         }
         
@@ -234,7 +255,9 @@ impl Parser {
         if stack.len() == 0 {
             return ast_new_expression(AstType::None);
         }
-        stack.pop().unwrap()
+        let op = stack.pop().unwrap();
+        //op.print();
+        op
     }
     
     //

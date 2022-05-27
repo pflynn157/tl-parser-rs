@@ -55,6 +55,9 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
 
 fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
     match &expr.ast_type {
+        //
+        // Binary operators
+        //
         AstType::Assign => {
             if !ignore_lval {
                 unwrite_expression(&expr.args[0], false);
@@ -62,7 +65,29 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
             }
             unwrite_expression(&expr.args[1], false);
         },
-    
+        
+        AstType::Add | AstType::Sub
+        | AstType::Mul | AstType::Div | AstType::Mod
+        | AstType::And | AstType::Or | AstType::Xor => {
+            unwrite_expression(&expr.args[0], false);
+            match &expr.ast_type {
+                AstType::Add => print!(" + "),
+                AstType::Sub => print!(" - "),
+                AstType::Mul => print!(" * "),
+                AstType::Div => print!(" / "),
+                AstType::Mod => print!(" % "),
+                AstType::And => print!(" & "),
+                AstType::Or => print!(" | "),
+                AstType::Xor => print!(" ^ "),
+                _ => {},
+            }
+            unwrite_expression(&expr.args[1], false);
+        },
+        
+        //
+        // Literals and primary expressions
+        //
+        AstType::Id => print!("{}", expr.string_value),
         AstType::IntLiteral => print!("{}", expr.int_value),
         AstType::StringLiteral => print!("{:?}", expr.string_value),
         AstType::CharLiteral => print!("{:?}", expr.char_value),
