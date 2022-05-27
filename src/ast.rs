@@ -11,6 +11,7 @@ pub enum AstType {
 
     // Statements
     Block,
+    VarDec,
     CallStmt,
     
     // Expressions
@@ -20,7 +21,16 @@ pub enum AstType {
     Assign,
     
     // Expressions- literals
+    Id,
+    IntLiteral,
     StringLiteral,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum DataType {
+    Void,
+    
+    I32,
 }
 
 #[derive(Clone)]
@@ -39,6 +49,7 @@ pub struct AstFunction {
 pub struct AstStatement {
     pub ast_type : AstType,
     pub name : String,
+    pub data_type : DataType,
     pub expr : AstExpression,
     pub statements : Vec<AstStatement>,     // For blocks
 }
@@ -46,6 +57,7 @@ pub struct AstStatement {
 #[derive(Clone)]
 pub struct AstExpression {
     pub ast_type : AstType,
+    pub int_value : u64,
     pub string_value : String,
     
     // This should only be used by an expression list
@@ -88,7 +100,7 @@ impl AstStatement {
         for _i in 0 .. index {
             print!(" ");
         }
-        print!("{:?} {} ", self.ast_type, self.name);
+        print!("{:?} {:?} {} ", self.ast_type, self.data_type, self.name);
         
         if self.expr.ast_type != AstType::None {
             self.expr.print();
@@ -133,14 +145,22 @@ impl AstExpression {
             // Binary operators
             //
             AstType::Assign => {
-                //self.lval.print();
-                print!(" = ");
-                //self.rval.print();
+                self.args[0].print();
+                print!(" := ");
+                self.args[1].print();
             },
             
             //
             // Literal expressions
             //
+            AstType::Id => {
+                print!("ID({})", self.string_value);
+            }
+            
+            AstType::IntLiteral => {
+                print!("{}", self.int_value);
+            },
+            
             AstType::StringLiteral => {
                 print!("{:?}", self.string_value);
             },
@@ -175,6 +195,7 @@ pub fn ast_new_statement(ast_type : AstType) -> AstStatement {
     AstStatement {
         ast_type : ast_type,
         name : String::new(),
+        data_type : DataType::Void,
         expr : ast_new_expression(AstType::None),
         statements : Vec::new(),
     }
@@ -183,6 +204,7 @@ pub fn ast_new_statement(ast_type : AstType) -> AstStatement {
 pub fn ast_new_expression(ast_type : AstType) -> AstExpression {
     AstExpression {
         ast_type : ast_type,
+        int_value : 0,
         string_value : String::new(),
         list : Vec::new(),
         args : Vec::new(),

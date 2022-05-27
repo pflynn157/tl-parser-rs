@@ -29,11 +29,18 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
     }
     
     match &stmt.ast_type {
+        AstType::VarDec => {
+            print!("var {} : ", stmt.name);
+            unwrite_data_type(&stmt.data_type);
+            print!(" := ");
+            unwrite_expression(&stmt.expr, true);
+        },
+    
         AstType::CallStmt => {
             print!("{}", stmt.name);
             //if stmt.expr.ast_type != AstType::ExprList {
                 print!("(");
-                unwrite_expression(&stmt.expr);
+                unwrite_expression(&stmt.expr, false);
                 print!(")");
             /*} else {
                 unwrite_expression(&stmt.expr);
@@ -46,11 +53,27 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
     println!(";");
 }
 
-fn unwrite_expression(expr : &AstExpression) {
+fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
     match &expr.ast_type {
+        AstType::Assign => {
+            if !ignore_lval {
+                unwrite_expression(&expr.args[0], false);
+                print!(" := ");
+            }
+            unwrite_expression(&expr.args[1], false);
+        },
+    
+        AstType::IntLiteral => print!("{}", expr.int_value),
         AstType::StringLiteral => print!("{:?}", expr.string_value),
         
         _ => {},
+    }
+}
+
+fn unwrite_data_type(data_type : &DataType) {
+    match &data_type {
+        DataType::Void => print!("void"),
+        DataType::I32 => print!("i32"),
     }
 }
 

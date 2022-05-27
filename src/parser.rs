@@ -99,6 +99,11 @@ impl Parser {
         
         while token != Token::End && token != Token::Eof {
             match token {
+                Token::Var => {
+                    let stmt = self.build_variable_dec();
+                    block.add_statement(stmt);
+                },
+            
                 Token::Id(name) => {
                     let expr = self.build_expression(Token::SemiColon);
                     if expr.ast_type == AstType::Assign {
@@ -123,11 +128,46 @@ impl Parser {
         block
     }
     
+    // Builds a variable declaration
+    fn build_variable_dec(&mut self) -> AstStatement {
+        let mut token = self.scanner.get_next();
+        let name : String;
+        match token {
+            Token::Id(value) => name = value,
+            _ => {
+                println!("Error: Expected name in variable declaration.");
+                return ast_new_statement(AstType::None);
+            },
+        }
+        
+        token = self.scanner.get_next();
+        if token != Token::Colon {
+            println!("Error: Expected colon.");
+            return ast_new_statement(AstType::None);
+        }
+    
+        let mut stmt = ast_new_statement(AstType::VarDec);
+        stmt.name = name.clone();
+        stmt.data_type = self.build_data_type();
+        
+        // This is for the assignment operation
+        //
+        let mut lval = ast_new_expression(AstType::Id);
+        lval.string_value = name;
+        
+        let mut expr = self.build_expression(Token::SemiColon);
+        expr.args.insert(0, lval);
+        stmt.set_expression(expr);
+        
+        stmt
+    }
+    
     //
     // Builds an expression
     //
     fn build_expression(&mut self, stop : Token) -> AstExpression {
         let mut stack : Vec<AstExpression> = Vec::new();
+        let mut op_stack : Vec<AstExpression> = Vec::new();
         let mut token = self.scanner.get_next();
         
         while token != stop && token != Token::Eof {
@@ -137,10 +177,27 @@ impl Parser {
                     stack.push(expr);
                 },
                 
+                
+                //
+                // Literals
+                //
+                Token::IntL(val) => {
+                    let mut expr = ast_new_expression(AstType::IntLiteral);
+                    expr.int_value = val;
+                    stack.push(expr);
+                },
+                
                 Token::StringL(val) => {
                     let mut expr = ast_new_expression(AstType::StringLiteral);
                     expr.string_value = val;
                     stack.push(expr);
+                },
+                
+                //
+                // Operators
+                //
+                Token::Assign => {
+                    op_stack.push(ast_new_expression(AstType::Assign));
                 },
                 
                 _ => {
@@ -153,13 +210,39 @@ impl Parser {
         }
         
         // Processing
-        // TODO
+        while op_stack.len() > 0 {
+            let mut op = op_stack.pop().unwrap();
+            if op.ast_type == AstType::Assign {
+                let rval = stack.pop().unwrap();
+                op.args.push(rval);
+                stack.push(op);
+            } else {
+                // TODO
+            }
+        }
         
         // Return the final expression
         if stack.len() == 0 {
             return ast_new_expression(AstType::None);
         }
         stack.pop().unwrap()
+    }
+    
+    //
+    // A utility function for building a data type
+    //
+    fn build_data_type(&mut self) -> DataType {
+        let token = self.scanner.get_next();
+        match token {
+            Token::I32 => DataType::I32,
+            
+            _ => {
+                println!("Error: Unknown data type token.");
+                println!("{:?}", token);
+                
+                DataType::Void
+            },
+        }
     }
 }
 
