@@ -159,124 +159,35 @@ impl AstExpression {
             //
             // Binary operators
             //
-            // TODO: Clean up like the unwriter
-            AstType::Assign => {
+            AstType::Assign
+            | AstType::Add | AstType::Sub
+            | AstType::Mul | AstType::Div | AstType::Mod
+            | AstType::And | AstType::Or | AstType::Xor 
+            | AstType::Eq | AstType::Ne
+            | AstType::Gt | AstType::Ge | AstType::Lt | AstType::Le => {
                 print!("(");
                 self.args[0].print();
-                print!(" := ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Add => {
-                print!("(");
-                self.args[0].print();
-                print!(" + ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Sub => {
-                print!("(");
-                self.args[0].print();
-                print!(" - ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Mul => {
-                print!("(");
-                self.args[0].print();
-                print!(" * ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Div => {
-                print!("(");
-                self.args[0].print();
-                print!(" / ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Mod => {
-                print!("(");
-                self.args[0].print();
-                print!(" % ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::And => {
-                print!("(");
-                self.args[0].print();
-                print!(" & ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Or => {
-                print!("(");
-                self.args[0].print();
-                print!(" | ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Xor => {
-                print!("(");
-                self.args[0].print();
-                print!(" ^ ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            // Comparisons
-            AstType::Eq => {
-                print!("(");
-                self.args[0].print();
-                print!(" = ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Ne => {
-                print!("(");
-                self.args[0].print();
-                print!(" != ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Gt => {
-                print!("(");
-                self.args[0].print();
-                print!(" > ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Ge => {
-                print!("(");
-                self.args[0].print();
-                print!(" >= ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Lt => {
-                print!("(");
-                self.args[0].print();
-                print!(" < ");
-                self.args[1].print();
-                print!(")");
-            },
-            
-            AstType::Le => {
-                print!("(");
-                self.args[0].print();
-                print!(" <= ");
+                match self.ast_type {
+                    AstType::Assign => print!(" := "),
+                
+                    AstType::Add => print!(" + "),
+                    AstType::Sub => print!(" - "),
+                    AstType::Mul => print!(" * "),
+                    AstType::Div => print!(" / "),
+                    AstType::Mod => print!(" % "),
+                    AstType::And => print!(" & "),
+                    AstType::Or => print!(" | "),
+                    AstType::Xor => print!(" ^ "),
+                    
+                    AstType::Eq => print!(" = "),
+                    AstType::Ne => print!(" != "),
+                    AstType::Gt => print!(" > "),
+                    AstType::Ge => print!(" >= "),
+                    AstType::Lt => print!(" < "),
+                    AstType::Le => print!(" <= "),
+                    
+                    _ => {},
+                }
                 self.args[1].print();
                 print!(")");
             },
