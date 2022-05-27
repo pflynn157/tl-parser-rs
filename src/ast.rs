@@ -23,14 +23,21 @@ pub enum AstType {
     // Expressions- literals
     Id,
     IntLiteral,
+    CharLiteral,
     StringLiteral,
+    BoolLiteral(bool),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum DataType {
     Void,
-    
-    I32,
+    I8, U8,
+    I16, U16,
+    I32, U32,
+    I64, U64,
+    String,
+    Char,
+    Bool,
 }
 
 #[derive(Clone)]
@@ -58,6 +65,7 @@ pub struct AstStatement {
 pub struct AstExpression {
     pub ast_type : AstType,
     pub int_value : u64,
+    pub char_value : char,
     pub string_value : String,
     
     // This should only be used by an expression list
@@ -161,6 +169,10 @@ impl AstExpression {
                 print!("{}", self.int_value);
             },
             
+            AstType::CharLiteral => {
+                print!("\'{:?}\'", self.char_value);
+            },
+            
             AstType::StringLiteral => {
                 print!("{:?}", self.string_value);
             },
@@ -205,6 +217,7 @@ pub fn ast_new_expression(ast_type : AstType) -> AstExpression {
     AstExpression {
         ast_type : ast_type,
         int_value : 0,
+        char_value : 0 as char,
         string_value : String::new(),
         list : Vec::new(),
         args : Vec::new(),

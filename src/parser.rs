@@ -193,6 +193,15 @@ impl Parser {
                     stack.push(expr);
                 },
                 
+                Token::CharL(val) => {
+                    let mut expr = ast_new_expression(AstType::CharLiteral);
+                    expr.char_value = val;
+                    stack.push(expr);
+                },
+                
+                Token::True => stack.push(ast_new_expression(AstType::BoolLiteral(true))),
+                Token::False => stack.push(ast_new_expression(AstType::BoolLiteral(false))),
+                
                 //
                 // Operators
                 //
@@ -234,7 +243,17 @@ impl Parser {
     fn build_data_type(&mut self) -> DataType {
         let token = self.scanner.get_next();
         match token {
+            Token::I8 => DataType::I8,
+            Token::U8 => DataType::U8,
+            Token::I16 => DataType::I16,
+            Token::U16 => DataType::U16,
             Token::I32 => DataType::I32,
+            Token::U32 => DataType::U32,
+            Token::I64 => DataType::I64,
+            Token::U64 => DataType::U64,
+            Token::String => DataType::String,
+            Token::Char => DataType::Char,
+            Token::Bool => DataType::Bool,
             
             _ => {
                 println!("Error: Unknown data type token.");

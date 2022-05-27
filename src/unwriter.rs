@@ -65,6 +65,8 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
     
         AstType::IntLiteral => print!("{}", expr.int_value),
         AstType::StringLiteral => print!("{:?}", expr.string_value),
+        AstType::CharLiteral => print!("{:?}", expr.char_value),
+        AstType::BoolLiteral(val) => print!("{}", val),
         
         _ => {},
     }
@@ -73,7 +75,17 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
 fn unwrite_data_type(data_type : &DataType) {
     match &data_type {
         DataType::Void => print!("void"),
+        DataType::I8 => print!("i8"),
+        DataType::U8 => print!("u8"),
+        DataType::I16 => print!("i16"),
+        DataType::U16 => print!("u16"),
         DataType::I32 => print!("i32"),
+        DataType::U32 => print!("u32"),
+        DataType::I64 => print!("i64"),
+        DataType::U64 => print!("u64"),
+        DataType::String => print!("string"),
+        DataType::Char => print!("char"),
+        DataType::Bool => print!("bool"),
     }
 }
 

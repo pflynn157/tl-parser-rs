@@ -16,7 +16,13 @@ pub enum Token {
     Var,
     
     // Type keywords
-    I32,
+    I8, U8,
+    I16, U16,
+    I32, U32,
+    I64, U64,
+    String,
+    Char,
+    Bool,
     
     // Symbols
     LParen,
@@ -29,6 +35,8 @@ pub enum Token {
     Id(String),
     StringL(String),
     IntL(u64),
+    CharL(char),
+    True, False,
 }
 
 //
@@ -94,6 +102,13 @@ impl Scanner {
                     c = self.get_char();
                 }
                 return Token::StringL(val);
+            }
+            
+            // Check character literals
+            if c == '\'' {
+                let c2 = self.get_char();
+                self.get_char();        // Assume '
+                return Token::CharL(c2);
             }
             
             if self.is_separator(c) || self.is_symbol(c) {
@@ -197,7 +212,19 @@ impl Scanner {
         else if self.buffer == "is" { return Token::Is; }
         else if self.buffer == "end" { return Token::End; }
         else if self.buffer == "var" { return Token::Var; }
+        else if self.buffer == "i8" { return Token::I8; }
+        else if self.buffer == "u8" { return Token::U8; }
+        else if self.buffer == "i16" { return Token::I16; }
+        else if self.buffer == "u16" { return Token::U16; }
         else if self.buffer == "i32" { return Token::I32; }
+        else if self.buffer == "u32" { return Token::U32; }
+        else if self.buffer == "i64" { return Token::I64; }
+        else if self.buffer == "u64" { return Token::U64; }
+        else if self.buffer == "string" { return Token::String; }
+        else if self.buffer == "char" { return Token::Char; }
+        else if self.buffer == "bool" { return Token::Bool; }
+        else if self.buffer == "true" { return Token::True; }
+        else if self.buffer == "false" { return Token::False; }
         Token::None
     }
     
