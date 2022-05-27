@@ -25,6 +25,7 @@ pub enum AstType {
     Div,
     Mod,
     And, Or, Xor,
+    Eq, Ne, Gt, Lt, Ge, Le,
     
     // Expressions- literals
     Id,
@@ -158,6 +159,7 @@ impl AstExpression {
             //
             // Binary operators
             //
+            // TODO: Clean up like the unwriter
             AstType::Assign => {
                 print!("(");
                 self.args[0].print();
@@ -226,6 +228,55 @@ impl AstExpression {
                 print!("(");
                 self.args[0].print();
                 print!(" ^ ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            // Comparisons
+            AstType::Eq => {
+                print!("(");
+                self.args[0].print();
+                print!(" = ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Ne => {
+                print!("(");
+                self.args[0].print();
+                print!(" != ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Gt => {
+                print!("(");
+                self.args[0].print();
+                print!(" > ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Ge => {
+                print!("(");
+                self.args[0].print();
+                print!(" >= ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Lt => {
+                print!("(");
+                self.args[0].print();
+                print!(" < ");
+                self.args[1].print();
+                print!(")");
+            },
+            
+            AstType::Le => {
+                print!("(");
+                self.args[0].print();
+                print!(" <= ");
                 self.args[1].print();
                 print!(")");
             },

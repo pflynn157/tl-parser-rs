@@ -32,6 +32,7 @@ pub enum Token {
     Assign,
     Add, Sub, Mul, Div, Mod,
     And, Or, Xor,
+    Eq, Ne, Gt, Lt, Ge, Le,
     
     // Literals
     Id(String),
@@ -176,7 +177,8 @@ impl Scanner {
             | ';'
             | ':'
             | '+' | '-' | '*' | '/' | '%' 
-            | '&' | '|' | '^' => return true,
+            | '&' | '|' | '^' 
+            | '=' | '!' | '>' | '<' => return true,
             _ => return false,
         }
     }
@@ -204,6 +206,7 @@ impl Scanner {
             '&' => return Token::And,
             '|' => return Token::Or,
             '^' => return Token::Xor,
+            '=' => return Token::Eq,
             
             ':' => {
                 let c2 = self.get_char();
@@ -212,6 +215,33 @@ impl Scanner {
                 }
                 self.pos -= 1;
                 return Token::Colon;
+            },
+            
+            '!' => {
+                let c2 = self.get_char();
+                if c2 == '=' {
+                    return Token::Ne;
+                }
+                self.pos -= 1;
+                return Token::None;
+            },
+            
+            '>' => {
+                let c2 = self.get_char();
+                if c2 == '=' {
+                    return Token::Ge;
+                }
+                self.pos -= 1;
+                return Token::Gt;
+            },
+            
+            '<' => {
+                let c2 = self.get_char();
+                if c2 == '=' {
+                    return Token::Le;
+                }
+                self.pos -= 1;
+                return Token::Lt;
             },
             
             _ => return Token::None,

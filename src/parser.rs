@@ -221,6 +221,13 @@ impl Parser {
                 Token::Or => op_stack.push(ast_new_expression(AstType::Or)),
                 Token::Xor => op_stack.push(ast_new_expression(AstType::Xor)),
                 
+                Token::Eq => op_stack.push(ast_new_expression(AstType::Eq)),
+                Token::Ne => op_stack.push(ast_new_expression(AstType::Ne)),
+                Token::Gt => op_stack.push(ast_new_expression(AstType::Gt)),
+                Token::Ge => op_stack.push(ast_new_expression(AstType::Ge)),
+                Token::Lt => op_stack.push(ast_new_expression(AstType::Lt)),
+                Token::Le => op_stack.push(ast_new_expression(AstType::Le)),
+                
                 _ => {
                     println!("Error: Invalid token in expression.");
                     println!("{:?}", token);

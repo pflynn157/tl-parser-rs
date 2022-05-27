@@ -68,7 +68,9 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
         
         AstType::Add | AstType::Sub
         | AstType::Mul | AstType::Div | AstType::Mod
-        | AstType::And | AstType::Or | AstType::Xor => {
+        | AstType::And | AstType::Or | AstType::Xor 
+        | AstType::Eq | AstType::Ne
+        | AstType::Gt | AstType::Ge | AstType::Lt | AstType::Le => {
             unwrite_expression(&expr.args[0], false);
             match &expr.ast_type {
                 AstType::Add => print!(" + "),
@@ -79,6 +81,14 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
                 AstType::And => print!(" & "),
                 AstType::Or => print!(" | "),
                 AstType::Xor => print!(" ^ "),
+                
+                AstType::Eq => print!(" = "),
+                AstType::Ne => print!(" != "),
+                AstType::Gt => print!(" > "),
+                AstType::Ge => print!(" >= "),
+                AstType::Lt => print!(" < "),
+                AstType::Le => print!(" <= "),
+                
                 _ => {},
             }
             unwrite_expression(&expr.args[1], false);
