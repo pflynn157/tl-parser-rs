@@ -15,7 +15,7 @@ pub enum AstType {
     CallStmt,
     
     // Expressions
-    //ExprList,
+    ExprList,
     
     // Expressions- operators
     Assign,
@@ -143,8 +143,8 @@ impl AstExpression {
             //
             // Generic expressions
             //
-            /*AstType::ExprList => {
-                print!("(");
+            AstType::ExprList => {
+                print!("{{");
                 let mut index : usize = 0;
                 for item in &self.list {
                     item.print();
@@ -153,8 +153,8 @@ impl AstExpression {
                     }
                     index += 1;
                 }
-                print!(")");
-            },*/
+                print!("}}");
+            },
             
             //
             // Binary operators
@@ -211,7 +211,7 @@ impl AstExpression {
                 print!("{:?}", self.string_value);
             },
             
-            _ => { print!("??"); },
+            _ => { print!("??-> {:?}", self.ast_type); },
         }
     }
     
@@ -227,9 +227,9 @@ impl AstExpression {
         self.args.push(item);
     }
     
-    /*pub fn add_list_item(&mut self, item : AstExpression) {
+    pub fn add_list_item(&mut self, item : AstExpression) {
         self.list.push(item);
-    }*/
+    }
 }
 
 //

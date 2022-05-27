@@ -103,6 +103,20 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
         AstType::CharLiteral => print!("{:?}", expr.char_value),
         AstType::BoolLiteral(val) => print!("{}", val),
         
+        //
+        // Generic expressions
+        //
+        AstType::ExprList => {
+            let mut index : usize = 0;
+            for item in &expr.list {
+                unwrite_expression(&item, false);
+                if index + 1 < expr.list.len() {
+                    print!(", ");
+                }
+                index += 1;
+            }
+        },
+        
         _ => {},
     }
 }

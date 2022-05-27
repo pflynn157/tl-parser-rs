@@ -165,16 +165,42 @@ impl Parser {
     //
     // Builds an expression
     //
+    fn process_expression(&mut self, stack : &mut Vec<AstExpression>, op_stack : &mut Vec<AstExpression>) {
+        while op_stack.len() > 0 {
+            let mut op = op_stack.pop().unwrap();
+            if op.ast_type == AstType::Assign {
+                let rval = stack.pop().unwrap();
+                op.set_rval(rval);
+                stack.push(op);
+            } else {
+                let rval = stack.pop().unwrap();
+                let lval = stack.pop().unwrap();
+                op.set_lval(lval);
+                op.set_rval(rval);
+                stack.push(op);
+            }
+        }
+    }
+    
     fn build_expression(&mut self, stop : Token) -> AstExpression {
         let mut stack : Vec<AstExpression> = Vec::new();
         let mut op_stack : Vec<AstExpression> = Vec::new();
         let mut token = self.scanner.get_next();
+        
+        let mut list_expr = ast_new_expression(AstType::ExprList);
+        let mut is_list = false;
         
         while token != stop && token != Token::Eof {
             match token {
                 Token::LParen => {
                     let expr = self.build_expression(Token::RParen);
                     stack.push(expr);
+                },
+                
+                Token::Comma => {
+                    is_list = true;
+                    self.process_expression(&mut stack, &mut op_stack);
+                    list_expr.add_list_item(stack.pop().unwrap());
                 },
                 
                 
@@ -237,34 +263,24 @@ impl Parser {
             token = self.scanner.get_next();
         }
         
-        // Processing
-        //println!("LEN: {} | STACK: {}", op_stack.len(), stack.len());
-        while op_stack.len() > 0 {
-            let mut op = op_stack.pop().unwrap();
-            //println!("TYPE: {:?} | LEN: {} | STACK: {}", op.ast_type, op_stack.len(), stack.len());
-            if op.ast_type == AstType::Assign {
-                let rval = stack.pop().unwrap();
-                //rval.print(); println!("");
-                op.set_rval(rval);
-                //op.print(); println!("");
-                stack.push(op);
-            } else {
-                let rval = stack.pop().unwrap();
-                let lval = stack.pop().unwrap();
-                op.set_lval(lval);
-                op.set_rval(rval);
-                //op.print(); println!("");
-                stack.push(op);
+        if stop == Token::RParen && is_list {
+            if stack.len() > 0 {
+                self.process_expression(&mut stack, &mut op_stack);
+                list_expr.add_list_item(stack.pop().unwrap());
             }
         }
         
+        // Processing
+        self.process_expression(&mut stack, &mut op_stack);
+        
         // Return the final expression
+        if is_list {
+            return list_expr;
+        }
         if stack.len() == 0 {
             return ast_new_expression(AstType::None);
         }
-        let op = stack.pop().unwrap();
-        //op.print();
-        op
+        stack.pop().unwrap()
     }
     
     //

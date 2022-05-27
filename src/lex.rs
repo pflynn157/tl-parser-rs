@@ -29,6 +29,7 @@ pub enum Token {
     RParen,
     SemiColon,
     Colon,
+    Comma,
     Assign,
     Add, Sub, Mul, Div, Mod,
     And, Or, Xor,
@@ -176,6 +177,7 @@ impl Scanner {
             | ')'
             | ';'
             | ':'
+            | ','
             | '+' | '-' | '*' | '/' | '%' 
             | '&' | '|' | '^' 
             | '=' | '!' | '>' | '<' => return true,
@@ -198,6 +200,7 @@ impl Scanner {
             '(' => return Token::LParen,
             ')' => return Token::RParen,
             ';' => return Token::SemiColon,
+            ',' => return Token::Comma,
             '+' => return Token::Add,
             '-' => return Token::Sub,
             '*' => return Token::Mul,
