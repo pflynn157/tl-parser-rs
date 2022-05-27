@@ -34,6 +34,7 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
             unwrite_data_type(&stmt.data_type);
             print!(" := ");
             unwrite_expression(&stmt.expr, true);
+            println!(";");
         },
     
         AstType::CallStmt => {
@@ -45,12 +46,22 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
             /*} else {
                 unwrite_expression(&stmt.expr);
             }*/
+            println!(";");
         },
         
-        _ => {},
+        AstType::While => {
+            print!("while ");
+            unwrite_expression(&stmt.expr, false);
+            println!(" do");
+            
+            unwrite_block(&stmt.statements[0], indent);
+            
+            //for _i in 0 .. indent { print!(" "); }
+            //println!("end");
+        },
+        
+        _ => { println!(""); },
     }
-    
-    println!(";");
 }
 
 fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {

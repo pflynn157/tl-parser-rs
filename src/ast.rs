@@ -13,6 +13,7 @@ pub enum AstType {
     Block,
     VarDec,
     CallStmt,
+    While,
     
     // Expressions
     ExprList,
@@ -112,16 +113,33 @@ impl AstFunction {
 
 impl AstStatement {
     pub fn print(&self, index : i32) {
-        for _i in 0 .. index {
-            print!(" ");
+        if self.ast_type == AstType::Block {
+            for stmt in &self.statements {
+                for _i in 0 .. index { print!(" "); }
+                stmt.print(index);
+            }
+            for _i in 0 .. index { print!(" "); }
+            println!("end");
+        } else {
+            for _i in 0 .. index {
+                print!(" ");
+            }
+            print!("{:?} {:?} {} ", self.ast_type, self.data_type, self.name);
+            
+            //if self.expr.ast_type != AstType::None {
+                self.expr.print();
+            //}
+            
+            println!("");
+            
+            match &self.ast_type {
+                AstType::While => {
+                    let block = &self.statements[0];
+                    block.print(index+2);
+                },
+                _ => {},
+            }
         }
-        print!("{:?} {:?} {} ", self.ast_type, self.data_type, self.name);
-        
-        //if self.expr.ast_type != AstType::None {
-            self.expr.print();
-        //}
-        
-        println!("");
     }
     
     pub fn set_name(&mut self, name : String) {

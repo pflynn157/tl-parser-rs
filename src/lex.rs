@@ -14,6 +14,8 @@ pub enum Token {
     Is,
     End,
     Var,
+    While,
+    Do,
     
     // Type keywords
     I8, U8,
@@ -257,6 +259,8 @@ impl Scanner {
         else if self.buffer == "is" { return Token::Is; }
         else if self.buffer == "end" { return Token::End; }
         else if self.buffer == "var" { return Token::Var; }
+        else if self.buffer == "while" { return Token::While; }
+        else if self.buffer == "do" { return Token::Do; }
         else if self.buffer == "i8" { return Token::I8; }
         else if self.buffer == "u8" { return Token::U8; }
         else if self.buffer == "i16" { return Token::I16; }

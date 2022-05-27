@@ -116,6 +116,17 @@ impl Parser {
                     }
                 },
                 
+                Token::While => {
+                    let expr = self.build_expression(Token::Do);
+                    let mut stmt = ast_new_statement(AstType::While);
+                    stmt.set_expression(expr);
+                    
+                    let sub_block = self.build_block();
+                    stmt.add_statement(sub_block);
+                    
+                    block.add_statement(stmt);
+                },
+                
                 _ => {
                     println!("Error: Invalid token statement.");
                     println!("{:?}", token);
