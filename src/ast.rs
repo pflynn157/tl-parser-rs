@@ -50,37 +50,37 @@ pub enum DataType {
 
 #[derive(Clone)]
 pub struct AstFile {
-    pub name : String,
-    pub functions : Vec<AstFunction>,
+    name : String,
+    functions : Vec<AstFunction>,
 }
 
 #[derive(Clone)]
 pub struct AstFunction {
-    pub name : String,
-    pub block : AstStatement,
+    name : String,
+    block : AstStatement,
 }
 
 #[derive(Clone)]
 pub struct AstStatement {
-    pub ast_type : AstType,
-    pub name : String,
-    pub data_type : DataType,
-    pub expr : AstExpression,
-    pub statements : Vec<AstStatement>,     // For blocks
+    ast_type : AstType,
+    name : String,
+    data_type : DataType,
+    expr : AstExpression,
+    statements : Vec<AstStatement>,     // For blocks
 }
 
 #[derive(Clone)]
 pub struct AstExpression {
-    pub ast_type : AstType,
-    pub int_value : u64,
-    pub char_value : char,
-    pub string_value : String,
+    ast_type : AstType,
+    int_value : u64,
+    char_value : char,
+    string_value : String,
     
     // This should only be used by an expression list
-    pub list : Vec<AstExpression>,
+    list : Vec<AstExpression>,
     
     // Only for binary operators
-    pub args : Vec<AstExpression>,
+    args : Vec<AstExpression>,
 }
 
 //
@@ -96,8 +96,18 @@ impl AstFile {
         }
     }
     
+    //
+    // Setter functions
+    //
     pub fn add_function(&mut self, func : AstFunction) {
         self.functions.push(func);
+    }
+    
+    //
+    // Getter functions
+    //
+    pub fn get_functions(&self) -> &Vec<AstFunction> {
+        &self.functions
     }
 }
 
@@ -108,6 +118,24 @@ impl AstFunction {
             stmt.print(2);
         }
         println!("end");
+    }
+    
+    //
+    // Setter functions
+    //
+    pub fn set_block(&mut self, block : AstStatement) {
+        self.block = block;
+    }
+    
+    //
+    // Getter functions
+    //
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+    
+    pub fn get_block(&self) -> &AstStatement {
+        &self.block
     }
 }
 
@@ -134,7 +162,7 @@ impl AstStatement {
             
             match &self.ast_type {
                 AstType::While => {
-                    let block = &self.statements[0];
+                    let block = self.get_block();
                     block.print(index+2);
                 },
                 _ => {},
@@ -142,8 +170,15 @@ impl AstStatement {
         }
     }
     
+    //
+    // Setter functions
+    //
     pub fn set_name(&mut self, name : String) {
         self.name = name;
+    }
+    
+    pub fn set_data_type(&mut self, data_type : DataType) {
+        self.data_type = data_type;
     }
     
     pub fn set_expression(&mut self, expr : AstExpression) {
@@ -152,6 +187,37 @@ impl AstStatement {
     
     pub fn add_statement(&mut self, stmt : AstStatement) {
         self.statements.push(stmt);
+    }
+    
+    pub fn add_sub_block(&mut self, stmt : AstStatement) {
+        self.statements.push(stmt);
+    }
+    
+    //
+    // Getter functions
+    //
+    pub fn get_type(&self) -> AstType {
+        self.ast_type.clone()
+    }
+    
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+    
+    pub fn get_data_type(&self) -> DataType {
+        self.data_type.clone()
+    }
+    
+    pub fn get_expression(&self) -> &AstExpression {
+        &self.expr
+    }
+    
+    pub fn get_statements(&self) -> &Vec<AstStatement> {
+        &self.statements
+    }
+    
+    pub fn get_block(&self) -> &AstStatement {
+        &self.statements[0]
     }
 }
 
@@ -233,6 +299,9 @@ impl AstExpression {
         }
     }
     
+    //
+    // Setter functions
+    //
     pub fn set_lval(&mut self, item : AstExpression) {
         if self.args.len() > 0 {
             self.args.insert(0, item);
@@ -247,6 +316,61 @@ impl AstExpression {
     
     pub fn add_list_item(&mut self, item : AstExpression) {
         self.list.push(item);
+    }
+    
+    pub fn set_int(&mut self, value : u64) {
+        self.int_value = value;
+    }
+    
+    pub fn set_char(&mut self, value : char) {
+        self.char_value = value;
+    }
+    
+    pub fn set_string(&mut self, value : String) {
+        self.string_value = value;
+    }
+    
+    pub fn set_name(&mut self, value : String) {
+        self.string_value = value;
+    }
+    
+    //
+    // Getter functions
+    //
+    pub fn get_type(&self) -> AstType {
+        self.ast_type.clone()
+    }
+    
+    pub fn get_lval(&self) -> &AstExpression {
+        &self.args[0]
+    }
+    
+    pub fn get_rval(&self) -> &AstExpression {
+        &self.args[1]
+    }
+    
+    pub fn get_list(&self) -> &Vec<AstExpression> {
+        &self.list
+    }
+    
+    pub fn get_list_size(&self) -> usize {
+        self.list.len()
+    }
+    
+    pub fn get_int(&self) -> u64 {
+        self.int_value
+    }
+    
+    pub fn get_char(&self) -> char {
+        self.char_value
+    }
+    
+    pub fn get_string(&self) -> String {
+        self.string_value.clone()
+    }
+    
+    pub fn get_name(&self) -> String {
+        self.string_value.clone()
     }
 }
 

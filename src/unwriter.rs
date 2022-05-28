@@ -1,19 +1,19 @@
 use crate::ast::*;
 
 pub fn unwrite(file : AstFile) {
-    for func in &file.functions {
+    for func in file.get_functions() {
         unwrite_function(func);
     }
 }
 
 fn unwrite_function(func : &AstFunction) {
-    println!("func {} is", func.name);
-    unwrite_block(&func.block, 0);
+    println!("func {} is", func.get_name());
+    unwrite_block(func.get_block(), 0);
     println!("");
 }
 
 fn unwrite_block(block : &AstStatement, indent : i32) {
-    for stmt in &block.statements {
+    for stmt in block.get_statements() {
         unwrite_statement(&stmt, indent+4);
     }
     
@@ -28,20 +28,20 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
         print!(" ");
     }
     
-    match &stmt.ast_type {
+    match stmt.get_type() {
         AstType::VarDec => {
-            print!("var {} : ", stmt.name);
-            unwrite_data_type(&stmt.data_type);
+            print!("var {} : ", stmt.get_name());
+            unwrite_data_type(&stmt.get_data_type());
             print!(" := ");
-            unwrite_expression(&stmt.expr, true);
+            unwrite_expression(stmt.get_expression(), true);
             println!(";");
         },
     
         AstType::CallStmt => {
-            print!("{}", stmt.name);
+            print!("{}", stmt.get_name());
             //if stmt.expr.ast_type != AstType::ExprList {
                 print!("(");
-                unwrite_expression(&stmt.expr, false);
+                unwrite_expression(stmt.get_expression(), false);
                 print!(")");
             /*} else {
                 unwrite_expression(&stmt.expr);
@@ -51,13 +51,10 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
         
         AstType::While => {
             print!("while ");
-            unwrite_expression(&stmt.expr, false);
+            unwrite_expression(stmt.get_expression(), false);
             println!(" do");
             
-            unwrite_block(&stmt.statements[0], indent);
-            
-            //for _i in 0 .. indent { print!(" "); }
-            //println!("end");
+            unwrite_block(stmt.get_block(), indent);
         },
         
         _ => { println!(""); },
@@ -65,16 +62,16 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
 }
 
 fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
-    match &expr.ast_type {
+    match expr.get_type() {
         //
         // Binary operators
         //
         AstType::Assign => {
             if !ignore_lval {
-                unwrite_expression(&expr.args[0], false);
+                unwrite_expression(expr.get_lval(), false);
                 print!(" := ");
             }
-            unwrite_expression(&expr.args[1], false);
+            unwrite_expression(expr.get_rval(), false);
         },
         
         AstType::Add | AstType::Sub
@@ -82,8 +79,8 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
         | AstType::And | AstType::Or | AstType::Xor 
         | AstType::Eq | AstType::Ne
         | AstType::Gt | AstType::Ge | AstType::Lt | AstType::Le => {
-            unwrite_expression(&expr.args[0], false);
-            match &expr.ast_type {
+            unwrite_expression(expr.get_lval(), false);
+            match expr.get_type() {
                 AstType::Add => print!(" + "),
                 AstType::Sub => print!(" - "),
                 AstType::Mul => print!(" * "),
@@ -102,16 +99,16 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
                 
                 _ => {},
             }
-            unwrite_expression(&expr.args[1], false);
+            unwrite_expression(expr.get_rval(), false);
         },
         
         //
         // Literals and primary expressions
         //
-        AstType::Id => print!("{}", expr.string_value),
-        AstType::IntLiteral => print!("{}", expr.int_value),
-        AstType::StringLiteral => print!("{:?}", expr.string_value),
-        AstType::CharLiteral => print!("{:?}", expr.char_value),
+        AstType::Id => print!("{}", expr.get_name()),
+        AstType::IntLiteral => print!("{}", expr.get_int()),
+        AstType::StringLiteral => print!("{:?}", expr.get_string()),
+        AstType::CharLiteral => print!("{:?}", expr.get_char()),
         AstType::BoolLiteral(val) => print!("{}", val),
         
         //
@@ -119,9 +116,9 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
         //
         AstType::ExprList => {
             let mut index : usize = 0;
-            for item in &expr.list {
+            for item in expr.get_list() {
                 unwrite_expression(&item, false);
-                if index + 1 < expr.list.len() {
+                if index + 1 < expr.get_list_size() {
                     print!(", ");
                 }
                 index += 1;

@@ -86,7 +86,7 @@ impl Parser {
         
         // Build the AST element
         let mut func : AstFunction = ast_new_function(function_name);
-        func.block = block;
+        func.set_block(block);
         self.ast.add_function(func);
     }
     
@@ -106,7 +106,7 @@ impl Parser {
             
                 Token::Id(name) => {
                     let expr = self.build_expression(Token::SemiColon);
-                    if expr.ast_type == AstType::Assign {
+                    if expr.get_type() == AstType::Assign {
                         // TODO: Variable assignment
                     } else {
                         let mut stmt = ast_new_statement(AstType::CallStmt);
@@ -122,7 +122,7 @@ impl Parser {
                     stmt.set_expression(expr);
                     
                     let sub_block = self.build_block();
-                    stmt.add_statement(sub_block);
+                    stmt.add_sub_block(sub_block);
                     
                     block.add_statement(stmt);
                 },
@@ -158,13 +158,13 @@ impl Parser {
         }
     
         let mut stmt = ast_new_statement(AstType::VarDec);
-        stmt.name = name.clone();
-        stmt.data_type = self.build_data_type();
+        stmt.set_name(name.clone());
+        stmt.set_data_type(self.build_data_type());
         
         // This is for the assignment operation
         //
         let mut lval = ast_new_expression(AstType::Id);
-        lval.string_value = name;
+        lval.set_name(name);
         
         let mut expr = self.build_expression(Token::SemiColon);
         expr.set_lval(lval);
@@ -179,7 +179,7 @@ impl Parser {
     fn process_expression(&mut self, stack : &mut Vec<AstExpression>, op_stack : &mut Vec<AstExpression>) {
         while op_stack.len() > 0 {
             let mut op = op_stack.pop().unwrap();
-            if op.ast_type == AstType::Assign {
+            if op.get_type() == AstType::Assign {
                 let rval = stack.pop().unwrap();
                 op.set_rval(rval);
                 stack.push(op);
@@ -220,25 +220,25 @@ impl Parser {
                 //
                 Token::Id(val) => {
                     let mut expr = ast_new_expression(AstType::Id);
-                    expr.string_value = val;
+                    expr.set_name(val);
                     stack.push(expr);
                 },
                 
                 Token::IntL(val) => {
                     let mut expr = ast_new_expression(AstType::IntLiteral);
-                    expr.int_value = val;
+                    expr.set_int(val);
                     stack.push(expr);
                 },
                 
                 Token::StringL(val) => {
                     let mut expr = ast_new_expression(AstType::StringLiteral);
-                    expr.string_value = val;
+                    expr.set_string(val);
                     stack.push(expr);
                 },
                 
                 Token::CharL(val) => {
                     let mut expr = ast_new_expression(AstType::CharLiteral);
-                    expr.char_value = val;
+                    expr.set_char(val);
                     stack.push(expr);
                 },
                 
