@@ -14,6 +14,7 @@ pub enum AstType {
     VarDec,
     CallStmt,
     While,
+    If, Elif, Else,
     
     // Expressions
     ExprList,
@@ -67,6 +68,7 @@ pub struct AstStatement {
     data_type : DataType,
     expr : AstExpression,
     statements : Vec<AstStatement>,     // For blocks
+    branches : Vec<AstStatement>,       // For conditionals
 }
 
 #[derive(Clone)]
@@ -146,8 +148,8 @@ impl AstStatement {
                 for _i in 0 .. index { print!(" "); }
                 stmt.print(index);
             }
-            for _i in 0 .. index { print!(" "); }
-            println!("end");
+            //for _i in 0 .. index { print!(" "); }
+            //println!("end");
         } else {
             for _i in 0 .. index {
                 print!(" ");
@@ -164,6 +166,20 @@ impl AstStatement {
                 AstType::While => {
                     let block = self.get_block();
                     block.print(index+2);
+                    for _i in 0 .. index { print!(" "); }
+                    println!("end");
+                },
+                
+                AstType::If | AstType::Elif | AstType::Else => {
+                    let block = self.get_block();
+                    block.print(index+2);
+                    for br in self.get_branches() {
+                        br.print(index);
+                    }
+                    if self.ast_type == AstType::If {
+                        for _i in 0 .. index { print!(" "); }
+                        println!("end");
+                    }
                 },
                 _ => {},
             }
@@ -193,6 +209,10 @@ impl AstStatement {
         self.statements.push(stmt);
     }
     
+    pub fn add_branch(&mut self, stmt : AstStatement) {
+        self.branches.push(stmt);
+    }
+    
     //
     // Getter functions
     //
@@ -218,6 +238,10 @@ impl AstStatement {
     
     pub fn get_block(&self) -> &AstStatement {
         &self.statements[0]
+    }
+    
+    pub fn get_branches(&self) -> &Vec<AstStatement> {
+        &self.branches
     }
 }
 
@@ -398,6 +422,7 @@ pub fn ast_new_statement(ast_type : AstType) -> AstStatement {
         data_type : DataType::Void,
         expr : ast_new_expression(AstType::None),
         statements : Vec::new(),
+        branches : Vec::new(),
     }
 }
 

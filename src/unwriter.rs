@@ -9,6 +9,7 @@ pub fn unwrite(file : AstFile) {
 fn unwrite_function(func : &AstFunction) {
     println!("func {} is", func.get_name());
     unwrite_block(func.get_block(), 0);
+    println!("end");
     println!("");
 }
 
@@ -17,10 +18,10 @@ fn unwrite_block(block : &AstStatement, indent : i32) {
         unwrite_statement(&stmt, indent+4);
     }
     
-    for _i in 0 .. indent {
+    /*for _i in 0 .. indent {
         print!(" ");
     }
-    println!("end");
+    println!("end");*/
 }
 
 fn unwrite_statement(stmt : &AstStatement, indent : i32) {
@@ -54,6 +55,31 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
             unwrite_expression(stmt.get_expression(), false);
             println!(" do");
             
+            unwrite_block(stmt.get_block(), indent);
+            for _i in 0 .. indent { print!(" "); }
+            println!("end");
+        },
+        
+        AstType::If | AstType::Elif => {
+            if stmt.get_type() == AstType::Elif { print!("elif "); }
+            else { print!("if "); }
+            unwrite_expression(stmt.get_expression(), false);
+            println!(" then");
+            
+            unwrite_block(stmt.get_block(), indent);
+            
+            for br in stmt.get_branches() {
+                unwrite_statement(br, indent);
+            }
+            
+            if stmt.get_type() == AstType::If {
+                for _i in 0 .. indent { print!(" "); }
+                println!("end");
+            }
+        },
+        
+        AstType::Else => {
+            println!("else");
             unwrite_block(stmt.get_block(), indent);
         },
         

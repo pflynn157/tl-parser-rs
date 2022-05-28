@@ -127,6 +127,47 @@ impl Parser {
                     block.add_statement(stmt);
                 },
                 
+                Token::If => {
+                    let expr = self.build_expression(Token::Then);
+                    let mut stmt = ast_new_statement(AstType::If);
+                    stmt.set_expression(expr);
+                    
+                    let sub_block = self.build_block();
+                    for br in sub_block.get_branches() {
+                        stmt.add_branch(br.clone());
+                    }
+                    stmt.add_sub_block(sub_block);
+                    
+                    block.add_statement(stmt);
+                },
+                
+                Token::Elif => {
+                    let expr = self.build_expression(Token::Then);
+                    let mut stmt = ast_new_statement(AstType::Elif);
+                    stmt.set_expression(expr);
+                    
+                    let sub_block = self.build_block();
+                    for br in sub_block.get_branches() {
+                        stmt.add_branch(br.clone());
+                    }
+                    stmt.add_sub_block(sub_block);
+                    
+                    block.add_branch(stmt);
+                    return block;
+                },
+                
+                Token::Else => {
+                    let mut stmt = ast_new_statement(AstType::Else);
+                    let sub_block = self.build_block();
+                    /*for br in sub_block.get_branches() {
+                        stmt.add_branch(br.clone());
+                    }*/
+                    stmt.add_sub_block(sub_block);
+                    
+                    block.add_branch(stmt);
+                    return block;
+                },
+                
                 _ => {
                     println!("Error: Invalid token statement.");
                     println!("{:?}", token);
