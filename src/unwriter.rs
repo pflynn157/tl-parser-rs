@@ -45,6 +45,11 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
             unwrite_expression(stmt.get_expression(), false);
             println!("];");
         },
+        
+        AstType::ExprStmt => {
+            unwrite_expression(stmt.get_expression(), false);
+            println!(";");
+        },
     
         AstType::CallStmt => {
             print!("{}", stmt.get_name());

@@ -105,9 +105,15 @@ impl Parser {
                 },
             
                 Token::Id(name) => {
-                    let expr = self.build_expression(Token::SemiColon);
+                    let mut expr = self.build_expression(Token::SemiColon);
                     if expr.get_type() == AstType::Assign {
-                        // TODO: Variable assignment
+                        let mut lval = ast_new_expression(AstType::Id);
+                        lval.set_name(name);
+                        expr.set_lval(lval);
+                        
+                        let mut stmt = ast_new_statement(AstType::ExprStmt);
+                        stmt.set_expression(expr);
+                        block.add_statement(stmt);
                     } else {
                         let mut stmt = ast_new_statement(AstType::CallStmt);
                         stmt.set_name(name);

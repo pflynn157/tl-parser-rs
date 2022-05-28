@@ -16,6 +16,7 @@ pub enum AstType {
     CallStmt,
     While,
     If, Elif, Else,
+    ExprStmt,
     
     // Expressions
     ExprList,
