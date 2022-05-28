@@ -13,11 +13,13 @@ do
     
     EXPECTED=`cat $f`
     ACTUAL=`cat /tmp/$NAME`
+    diff $f /tmp/$NAME
     
-    if [[ $EXPECTED == $ACTUAL ]] ; then
+    if [[ $? == 0 ]] ; then
         echo "Pass"
         echo ""
     else
+        echo $?
         echo "Fail"
         echo ""
         

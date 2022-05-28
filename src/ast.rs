@@ -12,6 +12,7 @@ pub enum AstType {
     // Statements
     Block,
     VarDec,
+    ArrayDec,
     CallStmt,
     While,
     If, Elif, Else,

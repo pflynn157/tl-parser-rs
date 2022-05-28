@@ -29,8 +29,8 @@ pub enum Token {
     Bool,
     
     // Symbols
-    LParen,
-    RParen,
+    LParen, RParen,
+    LBracket, RBracket,
     SemiColon,
     Colon,
     Comma,
@@ -86,6 +86,11 @@ impl Scanner {
                 println!("{}", e);
             }
         };
+    }
+    
+    // Unget the last token
+    pub fn unget(&mut self, token : Token) {
+        self.stack.push(token);
     }
     
     // Gets the next token in sequence
@@ -179,6 +184,7 @@ impl Scanner {
         match c {
               '('
             | ')'
+            | '[' | ']'
             | ';'
             | ':'
             | ','
@@ -203,6 +209,8 @@ impl Scanner {
         match c {
             '(' => return Token::LParen,
             ')' => return Token::RParen,
+            '[' => return Token::LBracket,
+            ']' => return Token::RBracket,
             ';' => return Token::SemiColon,
             ',' => return Token::Comma,
             '+' => return Token::Add,

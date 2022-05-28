@@ -197,21 +197,43 @@ impl Parser {
             println!("Error: Expected colon.");
             return ast_new_statement(AstType::None);
         }
-    
-        let mut stmt = ast_new_statement(AstType::VarDec);
-        stmt.set_name(name.clone());
-        stmt.set_data_type(self.build_data_type());
         
-        // This is for the assignment operation
-        //
-        let mut lval = ast_new_expression(AstType::Id);
-        lval.set_name(name);
+        let data_type = self.build_data_type();
         
-        let mut expr = self.build_expression(Token::SemiColon);
-        expr.set_lval(lval);
-        stmt.set_expression(expr);
+        token = self.scanner.get_next();
+        if token == Token::LBracket {
+            let mut stmt = ast_new_statement(AstType::ArrayDec);
+            stmt.set_name(name.clone());
+            stmt.set_data_type(data_type);
+            
+            let expr = self.build_expression(Token::RBracket);
+            stmt.set_expression(expr);
+            
+            token = self.scanner.get_next();
+            if token != Token::SemiColon {
+                println!("Error: Expected terminator.");
+                return ast_new_statement(AstType::None);
+            }
+            
+            stmt
+        } else {
+            self.scanner.unget(token);
         
-        stmt
+            let mut stmt = ast_new_statement(AstType::VarDec);
+            stmt.set_name(name.clone());
+            stmt.set_data_type(data_type);
+            
+            // This is for the assignment operation
+            //
+            let mut lval = ast_new_expression(AstType::Id);
+            lval.set_name(name);
+            
+            let mut expr = self.build_expression(Token::SemiColon);
+            expr.set_lval(lval);
+            stmt.set_expression(expr);
+            
+            stmt
+        }
     }
     
     //

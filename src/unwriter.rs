@@ -10,7 +10,7 @@ fn unwrite_function(func : &AstFunction) {
     println!("func {} is", func.get_name());
     unwrite_block(func.get_block(), 0);
     println!("end");
-    println!("");
+    //println!("");
 }
 
 fn unwrite_block(block : &AstStatement, indent : i32) {
@@ -36,6 +36,14 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
             print!(" := ");
             unwrite_expression(stmt.get_expression(), true);
             println!(";");
+        },
+        
+        AstType::ArrayDec => {
+            print!("var {} : ", stmt.get_name());
+            unwrite_data_type(&stmt.get_data_type());
+            print!("[");
+            unwrite_expression(stmt.get_expression(), false);
+            println!("];");
         },
     
         AstType::CallStmt => {
