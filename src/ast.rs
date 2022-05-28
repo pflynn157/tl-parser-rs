@@ -33,6 +33,7 @@ pub enum AstType {
     
     // Expressions- literals
     Id,
+    ArrayAcc,
     IntLiteral,
     CharLiteral,
     StringLiteral,
@@ -309,6 +310,12 @@ impl AstExpression {
                 print!("ID({})", self.string_value);
             }
             
+            AstType::ArrayAcc => {
+                print!("AC({})[", self.string_value);
+                self.args[0].print();
+                print!("]");
+            }
+            
             AstType::IntLiteral => {
                 print!("{}", self.int_value);
             },
@@ -328,6 +335,10 @@ impl AstExpression {
     //
     // Setter functions
     //
+    pub fn set_arg(&mut self, item : AstExpression) {
+        self.args.push(item);
+    }
+    
     pub fn set_lval(&mut self, item : AstExpression) {
         if self.args.len() > 0 {
             self.args.insert(0, item);
@@ -365,6 +376,10 @@ impl AstExpression {
     //
     pub fn get_type(&self) -> AstType {
         self.ast_type.clone()
+    }
+    
+    pub fn get_arg(&self) -> &AstExpression {
+        &self.args[0]
     }
     
     pub fn get_lval(&self) -> &AstExpression {

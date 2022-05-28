@@ -150,6 +150,12 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
         AstType::CharLiteral => print!("{:?}", expr.get_char()),
         AstType::BoolLiteral(val) => print!("{}", val),
         
+        AstType::ArrayAcc => {
+            print!("{}[", expr.get_name());
+            unwrite_expression(expr.get_arg(), false);
+            print!("]");
+        },
+        
         //
         // Generic expressions
         //

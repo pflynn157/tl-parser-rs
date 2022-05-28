@@ -105,10 +105,23 @@ impl Parser {
                 },
             
                 Token::Id(name) => {
+                    token = self.scanner.get_next();
+                    let sub_expr : AstExpression;
+                    let ast_type : AstType;
+                    if token == Token::LBracket {
+                        sub_expr = self.build_expression(Token::RBracket);
+                        ast_type = AstType::ArrayAcc;
+                    } else {
+                        self.scanner.unget(token);
+                        sub_expr = ast_new_expression(AstType::None);
+                        ast_type = AstType::Id;
+                    }
+                
                     let mut expr = self.build_expression(Token::SemiColon);
                     if expr.get_type() == AstType::Assign {
-                        let mut lval = ast_new_expression(AstType::Id);
+                        let mut lval = ast_new_expression(ast_type);
                         lval.set_name(name);
+                        lval.set_arg(sub_expr);
                         expr.set_lval(lval);
                         
                         let mut stmt = ast_new_statement(AstType::ExprStmt);
