@@ -308,6 +308,12 @@ impl Parser {
                         expr.set_name(val);
                         expr.set_arg(sub_expr);
                         stack.push(expr);
+                    } else if token == Token::LBracket {
+                        let sub_expr = self.build_expression(Token::RBracket);
+                        let mut expr = ast_new_expression(AstType::ArrayAcc);
+                        expr.set_name(val);
+                        expr.set_arg(sub_expr);
+                        stack.push(expr);
                     } else {
                         self.scanner.unget(token);
                         let mut expr = ast_new_expression(AstType::Id);
