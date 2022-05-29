@@ -301,9 +301,19 @@ impl Parser {
                 // Literals
                 //
                 Token::Id(val) => {
-                    let mut expr = ast_new_expression(AstType::Id);
-                    expr.set_name(val);
-                    stack.push(expr);
+                    token = self.scanner.get_next();
+                    if token == Token::LParen {
+                        let sub_expr = self.build_expression(Token::RParen);
+                        let mut expr = ast_new_expression(AstType::Call);
+                        expr.set_name(val);
+                        expr.set_arg(sub_expr);
+                        stack.push(expr);
+                    } else {
+                        self.scanner.unget(token);
+                        let mut expr = ast_new_expression(AstType::Id);
+                        expr.set_name(val);
+                        stack.push(expr);
+                    }
                 },
                 
                 Token::IntL(val) => {

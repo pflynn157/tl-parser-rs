@@ -20,6 +20,7 @@ pub enum AstType {
     
     // Expressions
     ExprList,
+    Call,
     
     // Expressions- operators
     Assign,
@@ -265,6 +266,12 @@ impl AstExpression {
                     index += 1;
                 }
                 print!("}}");
+            },
+            
+            AstType::Call => {
+                print!("{}(", self.string_value);
+                self.args[0].print();
+                print!(")");
             },
             
             //
