@@ -34,6 +34,7 @@ pub enum AstType {
     Mod,
     And, Or, Xor,
     Eq, Ne, Gt, Lt, Ge, Le,
+    LGAnd, LGOr,
     
     // Expressions- literals
     Id,
@@ -399,7 +400,8 @@ impl AstExpression {
             | AstType::Mul | AstType::Div | AstType::Mod
             | AstType::And | AstType::Or | AstType::Xor 
             | AstType::Eq | AstType::Ne
-            | AstType::Gt | AstType::Ge | AstType::Lt | AstType::Le => {
+            | AstType::Gt | AstType::Ge | AstType::Lt | AstType::Le
+            | AstType::LGAnd | AstType::LGOr => {
                 print!("(");
                 self.args[0].print();
                 match self.ast_type {
@@ -420,6 +422,9 @@ impl AstExpression {
                     AstType::Ge => print!(" >= "),
                     AstType::Lt => print!(" < "),
                     AstType::Le => print!(" <= "),
+                    
+                    AstType::LGAnd => print!(" && "),
+                    AstType::LGOr => print!(" || "),
                     
                     _ => {},
                 }

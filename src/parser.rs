@@ -549,6 +549,9 @@ impl Parser {
                 Token::Lt => op_stack.push(ast_new_expression(AstType::Lt)),
                 Token::Le => op_stack.push(ast_new_expression(AstType::Le)),
                 
+                Token::LGAnd => op_stack.push(ast_new_expression(AstType::LGAnd)),
+                Token::LGOr => op_stack.push(ast_new_expression(AstType::LGOr)),
+                
                 _ => {
                     println!("Error: Invalid token in expression.");
                     println!("{:?}", token);

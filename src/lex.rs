@@ -43,6 +43,7 @@ pub enum Token {
     Add, Sub, Mul, Div, Mod,
     And, Or, Xor,
     Eq, Ne, Gt, Lt, Ge, Le,
+    LGAnd, LGOr,
     
     // Literals
     Id(String),
@@ -224,8 +225,6 @@ impl Scanner {
             '*' => return Token::Mul,
             '/' => return Token::Div,
             '%' => return Token::Mod,
-            '&' => return Token::And,
-            '|' => return Token::Or,
             '^' => return Token::Xor,
             '=' => return Token::Eq,
             
@@ -272,6 +271,24 @@ impl Scanner {
                 }
                 self.pos -= 1;
                 return Token::Lt;
+            },
+            
+            '&' => {
+                let c2 = self.get_char();
+                if c2 == '&' {
+                    return Token::LGAnd;
+                }
+                self.pos -= 1;
+                return Token::And;
+            },
+            
+            '|' => {
+                let c2 = self.get_char();
+                if c2 == '|' {
+                    return Token::LGOr;
+                }
+                self.pos -= 1;
+                return Token::Or;
             },
             
             _ => return Token::None,

@@ -172,7 +172,8 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
         | AstType::Mul | AstType::Div | AstType::Mod
         | AstType::And | AstType::Or | AstType::Xor 
         | AstType::Eq | AstType::Ne
-        | AstType::Gt | AstType::Ge | AstType::Lt | AstType::Le => {
+        | AstType::Gt | AstType::Ge | AstType::Lt | AstType::Le 
+        | AstType::LGAnd | AstType::LGOr => {
             unwrite_expression(expr.get_lval(), false);
             match expr.get_type() {
                 AstType::Add => print!(" + "),
@@ -190,6 +191,9 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
                 AstType::Ge => print!(" >= "),
                 AstType::Lt => print!(" < "),
                 AstType::Le => print!(" <= "),
+                
+                AstType::LGAnd => print!(" && "),
+                AstType::LGOr => print!(" || "),
                 
                 _ => {},
             }
