@@ -61,6 +61,7 @@ pub enum DataType {
 #[derive(Clone)]
 pub struct AstFile {
     name : String,
+    imports : Vec<String>,
     structs : Vec<AstStruct>,
     consts : Vec<AstArg>,
     functions : Vec<AstFunction>,
@@ -120,6 +121,10 @@ impl AstFile {
         println!("FILE {}", self.name);
         println!("");
         
+        for i in &self.imports {
+            println!("import {};", i);
+        }
+        
         for s in &self.structs {
             s.print();
         }
@@ -140,6 +145,10 @@ impl AstFile {
     //
     // Setter functions
     //
+    pub fn add_import(&mut self, path : String) {
+        self.imports.push(path);
+    }
+    
     pub fn add_struct(&mut self, s : AstStruct) {
         self.structs.push(s);
     }
@@ -155,6 +164,10 @@ impl AstFile {
     //
     // Getter functions
     //
+    pub fn get_imports(&self) -> &Vec<String> {
+        &self.imports
+    }
+    
     pub fn get_structs(&self) -> &Vec<AstStruct> {
         &self.structs
     }
@@ -585,6 +598,7 @@ impl AstExpression {
 pub fn ast_new_file(name : String) -> AstFile {
     AstFile {
         name : name,
+        imports : Vec::new(),
         structs : Vec::new(),
         consts : Vec::new(),
         functions : Vec::new(),

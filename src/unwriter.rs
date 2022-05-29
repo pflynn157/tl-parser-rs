@@ -1,6 +1,15 @@
 use crate::ast::*;
 
 pub fn unwrite(file : AstFile) {
+    for path in file.get_imports() {
+        print!("import ");
+        for c in path.chars() {
+            if c == '/' { print!("."); }
+            else { print!("{}", c); }
+        }
+        println!(";");
+    }
+
     for s in file.get_structs() {
         unwrite_structure(s);
     }

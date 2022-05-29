@@ -43,6 +43,23 @@ impl Parser {
                     self.ast.add_const(c);
                 },
                 
+                Token::Import => {
+                    let mut path = String::new();
+                    let mut token = self.scanner.get_next();
+                    while token != Token::SemiColon {
+                        match token {
+                            Token::Id(val) => path.push_str(&val.clone()),
+                            Token::Dot => path.push('/'),
+                            
+                            _ => {},
+                        }
+                        
+                        token = self.scanner.get_next();
+                    }
+                    
+                    self.ast.add_import(path);
+                },
+                
                 _ => {
                     println!("Error: Unknown token in global scope.");
                     println!("-> {:?}", token);

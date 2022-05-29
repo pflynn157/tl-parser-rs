@@ -22,6 +22,7 @@ pub enum Token {
     Break, Continue,
     Struct,
     Const,
+    Import,
     
     // Type keywords
     I8, U8,
@@ -313,6 +314,7 @@ impl Scanner {
         else if self.buffer == "continue" { return Token::Continue; }
         else if self.buffer == "struct" { return Token::Struct; }
         else if self.buffer == "const" { return Token::Const; }
+        else if self.buffer == "import" { return Token::Import; }
         else if self.buffer == "i8" { return Token::I8; }
         else if self.buffer == "u8" { return Token::U8; }
         else if self.buffer == "i16" { return Token::I16; }
