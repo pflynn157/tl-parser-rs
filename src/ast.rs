@@ -65,6 +65,13 @@ pub struct AstFunction {
     name : String,
     data_type : DataType,
     block : AstStatement,
+    args : Vec<AstArg>,
+}
+
+#[derive(Clone)]
+pub struct AstArg {
+    name : String,
+    data_type : DataType,
 }
 
 #[derive(Clone)]
@@ -121,7 +128,12 @@ impl AstFile {
 
 impl AstFunction {
     pub fn print(&self) {
-        println!("func {} -> {:?} is", self.name, self.data_type);
+        print!("func {}(", self.name);
+        for arg in &self.args {
+            arg.print();
+            print!(", ");
+        }
+        println!(") -> {:?} is", self.data_type);
         for stmt in &self.block.statements {
             stmt.print(2);
         }
@@ -139,6 +151,10 @@ impl AstFunction {
         self.data_type = data_type;
     }
     
+    pub fn add_arg(&mut self, arg : AstArg) {
+        self.args.push(arg);
+    }
+    
     //
     // Getter functions
     //
@@ -150,8 +166,29 @@ impl AstFunction {
         self.data_type.clone()
     }
     
+    pub fn get_args(&self) -> &Vec<AstArg> {
+        &self.args
+    }
+    
     pub fn get_block(&self) -> &AstStatement {
         &self.block
+    }
+}
+
+impl AstArg {
+    pub fn print(&self) {
+        print!("{} : {:?}", self.name, self.data_type);
+    }
+    
+    //
+    // Getter functions
+    //
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+    
+    pub fn get_data_type(&self) -> DataType {
+        self.data_type.clone()
     }
 }
 
@@ -447,6 +484,14 @@ pub fn ast_new_function(name : String) -> AstFunction {
         name : name,
         data_type : DataType::Void,
         block : ast_new_statement(AstType::Block),
+        args : Vec::new(),
+    }
+}
+
+pub fn ast_new_arg(name : String, data_type : DataType) -> AstArg {
+    AstArg {
+        name : name,
+        data_type : data_type,
     }
 }
 

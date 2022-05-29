@@ -63,10 +63,36 @@ impl Parser {
         
         // Function arguments
         token = self.scanner.get_next();
+        let mut args : Vec<AstArg> = Vec::new();
         if token == Token::LParen {
-            // TODO
             while token != Token::RParen {
+                let name_token = self.scanner.get_next();
+                let colon_token = self.scanner.get_next();
+                let data_type = self.build_data_type();
                 token = self.scanner.get_next();
+                
+                if colon_token != Token::Colon {
+                    println!("Error: Expected colon in function argument.");
+                    println!(" -> {:?}", colon_token);
+                    return;
+                }
+                
+                let name : String;
+                match &name_token {
+                    Token::Id(val) => name = val.clone(),
+                    _ => {
+                        println!("Error: Expected argument name.");
+                        return;
+                    },
+                }
+                
+                if token != Token::Comma && token != Token::RParen {
+                    println!("Error: Expected \',\' or \'(\' after argument.");
+                    return;
+                }
+                
+                let arg = ast_new_arg(name, data_type);
+                args.push(arg);
             }
             
             token = self.scanner.get_next();
@@ -94,6 +120,7 @@ impl Parser {
         let mut func : AstFunction = ast_new_function(function_name);
         func.set_data_type(data_type);
         func.set_block(block);
+        for arg in args { func.add_arg(arg); }
         self.ast.add_function(func);
     }
     
