@@ -5,6 +5,14 @@ pub fn unwrite(file : AstFile) {
         unwrite_structure(s);
     }
     
+    for c in file.get_consts() {
+        print!("const {} : ", c.get_name());
+        unwrite_data_type(&c.get_data_type());
+        print!(" := ");
+        unwrite_expression(c.get_expression(), false);
+        println!(";");
+    }
+    
     for func in file.get_functions() {
         unwrite_function(func);
     }
@@ -44,9 +52,18 @@ fn unwrite_function(func : &AstFunction) {
         unwrite_data_type(&func.get_data_type());
     }
     println!(" is");
+    
+    for c in func.get_consts() {
+        print!("    ");
+        print!("const {} : ", c.get_name());
+        unwrite_data_type(&c.get_data_type());
+        print!(" := ");
+        unwrite_expression(c.get_expression(), false);
+        println!(";");
+    }
+    
     unwrite_block(func.get_block(), 0);
     println!("end");
-    //println!("");
 }
 
 fn unwrite_block(block : &AstStatement, indent : i32) {

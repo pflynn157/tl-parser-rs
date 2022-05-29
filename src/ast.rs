@@ -62,6 +62,7 @@ pub enum DataType {
 pub struct AstFile {
     name : String,
     structs : Vec<AstStruct>,
+    consts : Vec<AstArg>,
     functions : Vec<AstFunction>,
 }
 
@@ -77,6 +78,7 @@ pub struct AstFunction {
     data_type : DataType,
     block : AstStatement,
     args : Vec<AstArg>,
+    consts : Vec<AstArg>,
 }
 
 #[derive(Clone)]
@@ -123,6 +125,13 @@ impl AstFile {
         }
         println!("");
         
+        for c in &self.consts {
+            print!("CONST ");
+            c.print();
+            println!("");
+        }
+        println!("");
+        
         for func in &self.functions {
             func.print();
         }
@@ -135,6 +144,10 @@ impl AstFile {
         self.structs.push(s);
     }
     
+    pub fn add_const(&mut self, c : AstArg) {
+        self.consts.push(c);
+    }
+    
     pub fn add_function(&mut self, func : AstFunction) {
         self.functions.push(func);
     }
@@ -144,6 +157,10 @@ impl AstFile {
     //
     pub fn get_structs(&self) -> &Vec<AstStruct> {
         &self.structs
+    }
+    
+    pub fn get_consts(&self) -> &Vec<AstArg> {
+        &self.consts
     }
     
     pub fn get_functions(&self) -> &Vec<AstFunction> {
@@ -189,6 +206,11 @@ impl AstFunction {
             print!(", ");
         }
         println!(") -> {:?} is", self.data_type);
+        for c in &self.consts {
+            print!("  CONST ");
+            c.print();
+            println!("");
+        }
         for stmt in &self.block.statements {
             stmt.print(2);
         }
@@ -210,6 +232,10 @@ impl AstFunction {
         self.args.push(arg);
     }
     
+    pub fn add_const(&mut self, c : AstArg) {
+        self.consts.push(c);
+    }
+    
     //
     // Getter functions
     //
@@ -223,6 +249,10 @@ impl AstFunction {
     
     pub fn get_args(&self) -> &Vec<AstArg> {
         &self.args
+    }
+    
+    pub fn get_consts(&self) -> &Vec<AstArg> {
+        &self.consts
     }
     
     pub fn get_block(&self) -> &AstStatement {
@@ -556,6 +586,7 @@ pub fn ast_new_file(name : String) -> AstFile {
     AstFile {
         name : name,
         structs : Vec::new(),
+        consts : Vec::new(),
         functions : Vec::new(),
     }
 }
@@ -573,6 +604,7 @@ pub fn ast_new_function(name : String) -> AstFunction {
         data_type : DataType::Void,
         block : ast_new_statement(AstType::Block),
         args : Vec::new(),
+        consts : Vec::new(),
     }
 }
 

@@ -8,6 +8,7 @@ pub struct Parser {
     pub file_name : String,
     pub ast : AstFile,
     scanner : Scanner,
+    local_consts : Vec<AstArg>,
 }
 
 impl Parser {
@@ -36,6 +37,11 @@ impl Parser {
             match token {
                 Token::Func => self.build_function(),
                 Token::Struct => self.build_struct_def(),
+                
+                Token::Const => {
+                    let c = self.build_const();
+                    self.ast.add_const(c);
+                },
                 
                 _ => {
                     println!("Error: Unknown token in global scope.");
@@ -187,7 +193,9 @@ impl Parser {
         func.set_data_type(data_type);
         func.set_block(block);
         for arg in args { func.add_arg(arg); }
+        for c in self.local_consts.clone() { func.add_const(c); }
         self.ast.add_function(func);
+        self.local_consts.clear();
     }
     
     //
@@ -209,6 +217,11 @@ impl Parser {
                 Token::Var => {
                     let stmt = self.build_variable_dec();
                     block.add_statement(stmt);
+                },
+                
+                Token::Const => {
+                    let c = self.build_const();
+                    self.local_consts.push(c);
                 },
                 
                 Token::Struct => {
@@ -422,6 +435,39 @@ impl Parser {
         }
     }
     
+    // Builds a constant declaration
+    fn build_const(&mut self) -> AstArg {
+        let mut token = self.scanner.get_next();
+        let name : String;
+        match token {
+            Token::Id(value) => name = value,
+            _ => {
+                println!("Error: Expected name in variable declaration.");
+                name = String::new();
+                //return ast_new_statement(AstType::None);
+            },
+        }
+        
+        token = self.scanner.get_next();
+        if token != Token::Colon {
+            println!("Error: Expected colon.");
+            //return ast_new_statement(AstType::None);
+        }
+        
+        let data_type = self.build_data_type();
+        
+        token = self.scanner.get_next();
+        if token != Token::Assign {
+            println!("Error: Expected assignment operator.");
+            //return ast_new_statement(AstType::None);
+        }
+
+        let expr = self.build_expression(Token::SemiColon);
+        let mut c = ast_new_arg(name, data_type);
+        c.set_expression(expr);
+        c
+    }
+    
     //
     // Builds an expression
     //
@@ -617,6 +663,7 @@ pub fn parser_new(file_name : String) -> Parser {
         file_name : file_name.clone(),
         ast : ast_new_file(file_name.clone()),
         scanner : lex_new(file_name),
+        local_consts : Vec::new(),
     }
 }
 
