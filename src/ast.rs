@@ -14,6 +14,7 @@ pub enum AstType {
     Return,
     VarDec,
     ArrayDec,
+    StructDec,
     CallStmt,
     While,
     If, Elif, Else,

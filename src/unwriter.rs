@@ -92,6 +92,12 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
             println!("];");
         },
         
+        AstType::StructDec => {
+            print!("struct {} : ", stmt.get_name());
+            unwrite_expression(stmt.get_expression(), false);
+            println!(";");
+        },
+        
         AstType::ExprStmt => {
             unwrite_expression(stmt.get_expression(), false);
             println!(";");

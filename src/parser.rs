@@ -210,6 +210,33 @@ impl Parser {
                     let stmt = self.build_variable_dec();
                     block.add_statement(stmt);
                 },
+                
+                Token::Struct => {
+                    token = self.scanner.get_next();
+                    let var_name : String;
+                    match token {
+                        Token::Id(val) => var_name = val,
+                        
+                        _ => {
+                            println!("Error: Expected variable name in structure declaration.");
+                            var_name = String::new();
+                            //return;
+                        },
+                    }
+                    
+                    token = self.scanner.get_next();
+                    if token != Token::Colon {
+                        println!("Error: Expected \':\' between structure variable name and structure name.");
+                        //return;
+                    }
+                    
+                    // Create the AST elements
+                    let struct_id = self.build_expression(Token::SemiColon);        // TODO: Make sure this is only ID
+                    let mut stmt = ast_new_statement(AstType::StructDec);
+                    stmt.set_name(var_name);
+                    stmt.set_expression(struct_id);
+                    block.add_statement(stmt);
+                },
             
                 Token::Id(name) => {
                     token = self.scanner.get_next();
