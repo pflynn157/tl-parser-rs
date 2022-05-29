@@ -58,7 +58,14 @@ pub enum DataType {
 #[derive(Clone)]
 pub struct AstFile {
     name : String,
+    structs : Vec<AstStruct>,
     functions : Vec<AstFunction>,
+}
+
+#[derive(Clone)]
+pub struct AstStruct {
+    name : String,
+    items : Vec<AstArg>,
 }
 
 #[derive(Clone)]
@@ -73,6 +80,7 @@ pub struct AstFunction {
 pub struct AstArg {
     name : String,
     data_type : DataType,
+    expr : AstExpression,       // Only for structures
 }
 
 #[derive(Clone)]
@@ -107,6 +115,11 @@ impl AstFile {
         println!("FILE {}", self.name);
         println!("");
         
+        for s in &self.structs {
+            s.print();
+        }
+        println!("");
+        
         for func in &self.functions {
             func.print();
         }
@@ -115,6 +128,10 @@ impl AstFile {
     //
     // Setter functions
     //
+    pub fn add_struct(&mut self, s : AstStruct) {
+        self.structs.push(s);
+    }
+    
     pub fn add_function(&mut self, func : AstFunction) {
         self.functions.push(func);
     }
@@ -122,8 +139,42 @@ impl AstFile {
     //
     // Getter functions
     //
+    pub fn get_structs(&self) -> &Vec<AstStruct> {
+        &self.structs
+    }
+    
     pub fn get_functions(&self) -> &Vec<AstFunction> {
         &self.functions
+    }
+}
+
+impl AstStruct {
+    pub fn print(&self) {
+        println!("struct {} is", self.name);
+        for item in &self.items {
+            print!("  ");
+            item.print();
+            println!("");
+        }
+        println!("end");
+    }
+    
+    //
+    // Setter functions
+    //
+    pub fn add_item(&mut self, item : AstArg) {
+        self.items.push(item);
+    }
+    
+    //
+    // Getter functions
+    //
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+    
+    pub fn get_items(&self) -> &Vec<AstArg> {
+        &self.items
     }
 }
 
@@ -179,6 +230,18 @@ impl AstFunction {
 impl AstArg {
     pub fn print(&self) {
         print!("{} : {:?}", self.name, self.data_type);
+        if self.expr.get_type() != AstType::None {
+            print!(" -> ");
+            self.expr.print();
+            print!(";");
+        }
+    }
+    
+    //
+    // Setter functions
+    //
+    pub fn set_expression(&mut self, expr : AstExpression) {
+        self.expr = expr;
     }
     
     //
@@ -190,6 +253,10 @@ impl AstArg {
     
     pub fn get_data_type(&self) -> DataType {
         self.data_type.clone()
+    }
+    
+    pub fn get_expression(&self) -> &AstExpression {
+        &self.expr
     }
 }
 
@@ -476,7 +543,15 @@ impl AstExpression {
 pub fn ast_new_file(name : String) -> AstFile {
     AstFile {
         name : name,
+        structs : Vec::new(),
         functions : Vec::new(),
+    }
+}
+
+pub fn ast_new_struct(name : String) -> AstStruct {
+    AstStruct {
+        name : name,
+        items : Vec::new(),
     }
 }
 
@@ -493,6 +568,7 @@ pub fn ast_new_arg(name : String, data_type : DataType) -> AstArg {
     AstArg {
         name : name,
         data_type : data_type,
+        expr : ast_new_expression(AstType::None),
     }
 }
 

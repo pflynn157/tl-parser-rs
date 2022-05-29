@@ -35,6 +35,7 @@ impl Parser {
         while token != Token::Eof {
             match token {
                 Token::Func => self.build_function(),
+                Token::Struct => self.build_struct_def(),
                 
                 _ => {
                     println!("Error: Unknown token in global scope.");
@@ -44,6 +45,71 @@ impl Parser {
             
             token = self.scanner.get_next();
         }
+    }
+    
+    //
+    // Builds a structure definition
+    //
+    pub fn build_struct_def(&mut self) {
+        let mut token = self.scanner.get_next();
+        let struct_name : String;
+        match token {
+            Token::Id(name) => struct_name = name,
+            
+            _ => {
+                println!("Error: Expected structure name.");
+                return;
+            },
+        }
+        
+        token = self.scanner.get_next();
+        if token != Token::Is {
+            println!("Error: Expected \"is\".");
+            return;
+        }
+        
+        // Create the element
+        let mut ast_struct = ast_new_struct(struct_name);
+        
+        // Now, parse the block
+        token = self.scanner.get_next();
+        while token != Token::End && token != Token::Eof {
+            // First token is name
+            let name : String;
+            match token {
+                Token::Id(val) => name = val,
+                
+                _ => {
+                    println!("Error: Expected item name.");
+                    return;
+                },
+            }
+            let colon_token = self.scanner.get_next();
+            let data_type = self.build_data_type();
+            
+            if colon_token != Token::Colon {
+                println!("Error: Expected \':\' in structure item.");
+                return;
+            }
+            
+            // This is for the assignment operation
+            let mut lval = ast_new_expression(AstType::Id);
+            lval.set_name(name.clone());
+            
+            let mut expr = self.build_expression(Token::SemiColon);
+            expr.set_lval(lval);
+            
+            // Build the AST element
+            let mut arg = ast_new_arg(name, data_type);
+            arg.set_expression(expr);
+            ast_struct.add_item(arg);
+            
+            // Get the next token
+            token = self.scanner.get_next();
+        }
+        
+        // Add the structure to the tree
+        self.ast.add_struct(ast_struct)
     }
     
     //

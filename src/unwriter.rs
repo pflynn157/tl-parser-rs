@@ -1,9 +1,25 @@
 use crate::ast::*;
 
 pub fn unwrite(file : AstFile) {
+    for s in file.get_structs() {
+        unwrite_structure(s);
+    }
+    
     for func in file.get_functions() {
         unwrite_function(func);
     }
+}
+
+fn unwrite_structure(s : &AstStruct) {
+    println!("struct {} is", s.get_name());
+    for item in s.get_items() {
+        print!("    {} : ", item.get_name());
+        unwrite_data_type(&item.get_data_type());
+        print!(" := ");
+        unwrite_expression(item.get_expression(), true);
+        println!(";");
+    }
+    println!("end");
 }
 
 fn unwrite_function(func : &AstFunction) {
