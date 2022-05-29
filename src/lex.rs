@@ -19,6 +19,7 @@ pub enum Token {
     Do,
     If, Elif, Else,
     Then,
+    Break, Continue,
     
     // Type keywords
     I8, U8,
@@ -286,6 +287,8 @@ impl Scanner {
         else if self.buffer == "elif" { return Token::Elif; }
         else if self.buffer == "else" { return Token::Else; }
         else if self.buffer == "then" { return Token::Then; }
+        else if self.buffer == "break" { return Token::Break; }
+        else if self.buffer == "continue" { return Token::Continue; }
         else if self.buffer == "i8" { return Token::I8; }
         else if self.buffer == "u8" { return Token::U8; }
         else if self.buffer == "i16" { return Token::I16; }

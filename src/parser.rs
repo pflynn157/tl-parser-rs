@@ -228,6 +228,23 @@ impl Parser {
                     return block;
                 },
                 
+                Token::Break | Token::Continue => {
+                    let keyword = token;
+                    token = self.scanner.get_next();
+                    if token != Token::SemiColon {
+                        println!("Error: Expected terminator.");
+                        println!("{:?}", token);
+                    }
+                    
+                    if keyword == Token::Break {
+                        let stmt = ast_new_statement(AstType::Break);
+                        block.add_statement(stmt);
+                    } else if keyword == Token::Continue {
+                        let stmt = ast_new_statement(AstType::Continue);
+                        block.add_statement(stmt);
+                    }
+                },
+                
                 _ => {
                     println!("Error: Invalid token statement.");
                     println!("{:?}", token);

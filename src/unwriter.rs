@@ -126,6 +126,9 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
             unwrite_block(stmt.get_block(), indent);
         },
         
+        AstType::Break => println!("break;"),
+        AstType::Continue => println!("continue;"),
+        
         _ => { println!(""); },
     }
 }

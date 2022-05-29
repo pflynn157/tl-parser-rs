@@ -18,6 +18,7 @@ pub enum AstType {
     While,
     If, Elif, Else,
     ExprStmt,
+    Break, Continue,
     
     // Expressions
     ExprList,
