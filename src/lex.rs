@@ -37,6 +37,7 @@ pub enum Token {
     SemiColon,
     Colon,
     Comma,
+    Dot,
     Arrow,
     Assign,
     Add, Sub, Mul, Div, Mod,
@@ -191,7 +192,8 @@ impl Scanner {
             | '[' | ']'
             | ';'
             | ':'
-            | ','
+            | ',' 
+            | '.'
             | '+' | '-' | '*' | '/' | '%' 
             | '&' | '|' | '^' 
             | '=' | '!' | '>' | '<' => return true,
@@ -217,6 +219,7 @@ impl Scanner {
             ']' => return Token::RBracket,
             ';' => return Token::SemiColon,
             ',' => return Token::Comma,
+            '.' => return Token::Dot,
             '+' => return Token::Add,
             '*' => return Token::Mul,
             '/' => return Token::Div,

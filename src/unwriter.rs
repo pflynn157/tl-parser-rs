@@ -211,6 +211,11 @@ fn unwrite_expression(expr : &AstExpression, ignore_lval : bool) {
             print!("]");
         },
         
+        AstType::StructAcc => {
+            print!("{}.", expr.get_name());
+            unwrite_expression(expr.get_arg(), false);
+        },
+        
         //
         // Generic expressions
         //

@@ -38,6 +38,7 @@ pub enum AstType {
     // Expressions- literals
     Id,
     ArrayAcc,
+    StructAcc,
     IntLiteral,
     CharLiteral,
     StringLiteral,
@@ -438,6 +439,11 @@ impl AstExpression {
                 self.args[0].print();
                 print!("]");
             }
+            
+            AstType::StructAcc => {
+                print!("SA({}).", self.string_value);
+                self.args[0].print();
+            },
             
             AstType::IntLiteral => {
                 print!("{}", self.int_value);

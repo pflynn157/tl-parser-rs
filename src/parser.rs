@@ -240,11 +240,27 @@ impl Parser {
             
                 Token::Id(name) => {
                     token = self.scanner.get_next();
-                    let sub_expr : AstExpression;
+                    let mut sub_expr : AstExpression;
                     let ast_type : AstType;
                     if token == Token::LBracket {
                         sub_expr = self.build_expression(Token::RBracket);
                         ast_type = AstType::ArrayAcc;
+                    } else if token == Token::Dot {
+                        token = self.scanner.get_next();
+                        let item_name : String;
+                        match token {
+                            Token::Id(val) => item_name = val,
+                            
+                            _ => {
+                                println!("Error: Expected item name in structure access.");
+                                item_name = String::new();
+                                //return;
+                            },
+                        }
+                        
+                        sub_expr = ast_new_expression(AstType::Id);
+                        sub_expr.set_name(item_name);
+                        ast_type = AstType::StructAcc;
                     } else {
                         self.scanner.unget(token);
                         sub_expr = ast_new_expression(AstType::None);
@@ -462,6 +478,25 @@ impl Parser {
                     } else if token == Token::LBracket {
                         let sub_expr = self.build_expression(Token::RBracket);
                         let mut expr = ast_new_expression(AstType::ArrayAcc);
+                        expr.set_name(val);
+                        expr.set_arg(sub_expr);
+                        stack.push(expr);
+                    } else if token == Token::Dot {
+                        token = self.scanner.get_next();
+                        let item_name : String;
+                        match token {
+                            Token::Id(val) => item_name = val,
+                            
+                            _ => {
+                                println!("Error: Expected item name in structure access.");
+                                item_name = String::new();
+                                //return;
+                            },
+                        }
+                        
+                        let mut sub_expr = ast_new_expression(AstType::Id);
+                        sub_expr.set_name(item_name);
+                        let mut expr = ast_new_expression(AstType::StructAcc);
                         expr.set_name(val);
                         expr.set_arg(sub_expr);
                         stack.push(expr);
