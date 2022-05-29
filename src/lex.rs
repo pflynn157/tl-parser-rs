@@ -162,6 +162,18 @@ impl Scanner {
                     return token;
                 }
                 
+                // See if we have a hex literal
+                match self.buffer.get(..2) {
+                    Some("0x") => {
+                        let base = self.buffer.trim_start_matches("0x");
+                        token = Token::IntL(u64::from_str_radix(base, 16).unwrap());
+                        self.buffer = String::new();
+                        return token;
+                    },
+                    
+                    _ => {},
+                }
+                
                 // Otherwise, we have an indentifier
                 token = Token::Id(self.buffer.clone());
                 self.buffer = String::new();
