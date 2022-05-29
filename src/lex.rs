@@ -13,6 +13,7 @@ pub enum Token {
     Func,
     Is,
     End,
+    Return,
     Var,
     While,
     Do,
@@ -268,6 +269,7 @@ impl Scanner {
         if self.buffer == "func" { return Token::Func; }
         else if self.buffer == "is" { return Token::Is; }
         else if self.buffer == "end" { return Token::End; }
+        else if self.buffer == "return" { return Token::Return; }
         else if self.buffer == "var" { return Token::Var; }
         else if self.buffer == "while" { return Token::While; }
         else if self.buffer == "do" { return Token::Do; }

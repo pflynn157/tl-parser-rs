@@ -99,6 +99,13 @@ impl Parser {
         
         while token != Token::End && token != Token::Eof {
             match token {
+                Token::Return => {
+                    let expr = self.build_expression(Token::SemiColon);
+                    let mut stmt = ast_new_statement(AstType::Return);
+                    stmt.set_expression(expr);
+                    block.add_statement(stmt);
+                },
+            
                 Token::Var => {
                     let stmt = self.build_variable_dec();
                     block.add_statement(stmt);

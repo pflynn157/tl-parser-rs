@@ -30,6 +30,16 @@ fn unwrite_statement(stmt : &AstStatement, indent : i32) {
     }
     
     match stmt.get_type() {
+        AstType::Return => {
+            print!("return");
+            let expr = stmt.get_expression();
+            if expr.get_type() != AstType::None {
+                print!(" ");
+                unwrite_expression(expr, false);
+            } 
+            println!(";");
+        },
+    
         AstType::VarDec => {
             print!("var {} : ", stmt.get_name());
             unwrite_data_type(&stmt.get_data_type());

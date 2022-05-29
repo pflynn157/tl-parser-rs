@@ -11,6 +11,7 @@ pub enum AstType {
 
     // Statements
     Block,
+    Return,
     VarDec,
     ArrayDec,
     CallStmt,
