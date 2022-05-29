@@ -73,7 +73,13 @@ impl Parser {
         }
         
         // Check function return
-        // TODO
+        let data_type : DataType;
+        if token == Token::Arrow {
+            data_type = self.build_data_type();
+            token = self.scanner.get_next();
+        } else {
+            data_type = DataType::Void;
+        }
         
         // Finally, a block start
         if token != Token::Is {
@@ -86,6 +92,7 @@ impl Parser {
         
         // Build the AST element
         let mut func : AstFunction = ast_new_function(function_name);
+        func.set_data_type(data_type);
         func.set_block(block);
         self.ast.add_function(func);
     }

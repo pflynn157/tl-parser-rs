@@ -63,6 +63,7 @@ pub struct AstFile {
 #[derive(Clone)]
 pub struct AstFunction {
     name : String,
+    data_type : DataType,
     block : AstStatement,
 }
 
@@ -120,7 +121,7 @@ impl AstFile {
 
 impl AstFunction {
     pub fn print(&self) {
-        println!("func {} is", self.name);
+        println!("func {} -> {:?} is", self.name, self.data_type);
         for stmt in &self.block.statements {
             stmt.print(2);
         }
@@ -134,11 +135,19 @@ impl AstFunction {
         self.block = block;
     }
     
+    pub fn set_data_type(&mut self, data_type : DataType) {
+        self.data_type = data_type;
+    }
+    
     //
     // Getter functions
     //
     pub fn get_name(&self) -> String {
         self.name.clone()
+    }
+    
+    pub fn get_data_type(&self) -> DataType {
+        self.data_type.clone()
     }
     
     pub fn get_block(&self) -> &AstStatement {
@@ -436,6 +445,7 @@ pub fn ast_new_file(name : String) -> AstFile {
 pub fn ast_new_function(name : String) -> AstFunction {
     AstFunction {
         name : name,
+        data_type : DataType::Void,
         block : ast_new_statement(AstType::Block),
     }
 }

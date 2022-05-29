@@ -35,6 +35,7 @@ pub enum Token {
     SemiColon,
     Colon,
     Comma,
+    Arrow,
     Assign,
     Add, Sub, Mul, Div, Mod,
     And, Or, Xor,
@@ -215,7 +216,6 @@ impl Scanner {
             ';' => return Token::SemiColon,
             ',' => return Token::Comma,
             '+' => return Token::Add,
-            '-' => return Token::Sub,
             '*' => return Token::Mul,
             '/' => return Token::Div,
             '%' => return Token::Mod,
@@ -223,6 +223,15 @@ impl Scanner {
             '|' => return Token::Or,
             '^' => return Token::Xor,
             '=' => return Token::Eq,
+            
+            '-' => {
+                let c2 = self.get_char();
+                if c2 == '>' {
+                    return Token::Arrow;
+                }
+                self.pos -= 1;
+                return Token::Sub;
+            },
             
             ':' => {
                 let c2 = self.get_char();

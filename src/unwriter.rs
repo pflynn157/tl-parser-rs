@@ -7,7 +7,13 @@ pub fn unwrite(file : AstFile) {
 }
 
 fn unwrite_function(func : &AstFunction) {
-    println!("func {} is", func.get_name());
+    print!("func {} ", func.get_name());
+    if func.get_data_type() != DataType::Void {
+        print!("-> ");
+        unwrite_data_type(&func.get_data_type());
+        print!(" ");
+    }
+    println!("is");
     unwrite_block(func.get_block(), 0);
     println!("end");
     //println!("");
